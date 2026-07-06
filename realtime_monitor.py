@@ -15,7 +15,8 @@ A股规则（必须遵守）：
   - 印花税卖出单向千一，佣金双向万三
 
 用法：
-  python realtime_monitor.py              # 盘中持续监控+自动交易
+  python realtime_monitor.py              # 盘中持续监控+自动交易（本地）
+  python realtime_monitor.py --cloud      # 云端模式（GitHub Actions用，akshare数据源+git提交）
   python realtime_monitor.py --interval 30  # 30秒刷新
   python realtime_monitor.py --once        # 只跑一次（测试用）
   python realtime_monitor.py --force       # 非交易时间也运行
@@ -25,11 +26,21 @@ import os
 import sys
 import json
 import time
-import requests
 import shutil
-from datetime import datetime
+import subprocess
+from datetime import datetime, timezone, timedelta
 
 os.environ["PYTHONIOENCODING"] = "utf-8"
+
+# ============ 北京时区 ============
+BEIJING_TZ = timezone(timedelta(hours=8))
+
+def now_beijing():
+    """获取北京时间（无论运行在哪里都正确）"""
+    return datetime.now(BEIJING_TZ)
+
+def today_str_beijing():
+    return now_beijing().strftime("%Y-%m-%d")
 
 # ============ A股交易规则配置 ============
 STOP_LOSS_PCT = -5.0       # 硬止损 -5%（盘中亏损达5%立刻卖出）
@@ -43,6 +54,7 @@ STAMP_TAX_RATE = 0.001     # 印花税 千一（卖出单向）
 SLIPPAGE = 0.001           # 滑点 0.1%
 
 DEFAULT_INTERVAL = 60      # 默认刷新间隔(秒)
+CLOUD_INTERVAL = 120       # 云端模式刷新间隔(秒)，减少API压力
 
 SINA_API = "http://hq.sinajs.cn/list={codes}"
 HEADERS = {"Referer": "https://finance.sina.com.cn"}
@@ -78,8 +90,6 @@ def is_at_limit_up(code, quote):
     current = quote.get("current", 0)
     if prev_close <= 0:
         return False
-    limit_up_price = prev_close * (1 + limit_pct / 100)
-    # 涨幅>9.5%(主板)或>19.5%(科创板)视为涨停
     pct = (current / prev_close - 1) * 100
     return pct >= (limit_pct - 0.5)
 
@@ -96,18 +106,25 @@ def is_at_limit_down(code, quote):
 
 
 def is_trading_hours():
-    """检查是否在A股交易时间内"""
-    now = datetime.now()
+    """检查是否在A股交易时间内（使用北京时间）"""
+    now = now_beijing()
     if now.weekday() >= 5:
         return False, "周末非交易日"
     hour_min = now.hour * 100 + now.minute
     if hour_min < 930:
         return False, f"尚未开盘(9:30)，当前 {now.strftime('%H:%M')}"
-    if hour_min > 1500:
+    if hour_min > 1505:
         return False, f"已收盘(15:00)，当前 {now.strftime('%H:%M')}"
     if 1130 < hour_min < 1300:
         return False, f"午间休市(11:30-13:00)，当前 {now.strftime('%H:%M')}"
     return True, now.strftime("%H:%M:%S")
+
+
+def should_stop_cloud():
+    """云端模式：15:10后自动停止"""
+    now = now_beijing()
+    hour_min = now.hour * 100 + now.minute
+    return hour_min >= 1510
 
 
 # ============ 行情拉取 ============
@@ -120,15 +137,16 @@ def sina_code(code):
         return f"sz{code}"
 
 
-def fetch_realtime(codes):
-    """从新浪财经拉取实时行情，返回 {code: quote_dict}"""
+def fetch_realtime_sina(codes):
+    """从新浪财经拉取实时行情"""
     sina_codes = ",".join([sina_code(c) for c in codes])
     url = SINA_API.format(codes=sina_codes)
     try:
+        import requests
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "gbk"
     except Exception as e:
-        print(f"  [错误] 行情拉取失败: {e}")
+        print(f"  [新浪行情错误] {e}")
         return {}
 
     result = {}
@@ -166,6 +184,61 @@ def fetch_realtime(codes):
     return result
 
 
+def fetch_realtime_akshare(codes):
+    """从akshare(东方财富)拉取实时行情 — 云端模式首选，国际可达"""
+    try:
+        import akshare as ak
+        df = ak.stock_zh_a_spot_em()
+    except Exception as e:
+        print(f"  [akshare行情错误] {e}")
+        return {}
+
+    result = {}
+    for code in codes:
+        row = df[df["代码"] == code]
+        if len(row) == 0:
+            continue
+        r = row.iloc[0]
+        current = float(r.get("最新价", 0))
+        if current <= 0:
+            continue
+        prev_close = float(r.get("昨收", 0))
+        if prev_close <= 0:
+            # 从涨跌幅反推
+            pct_val = float(r.get("涨跌幅", 0))
+            prev_close = current / (1 + pct_val / 100) if pct_val != -100 else current
+
+        pct = (current / prev_close - 1) * 100 if prev_close > 0 else 0
+        result[code] = {
+            "name": str(r.get("名称", code)),
+            "open": float(r.get("今开", 0)),
+            "prev_close": prev_close,
+            "current": current,
+            "high": float(r.get("最高", 0)),
+            "low": float(r.get("最低", 0)),
+            "volume": int(float(r.get("成交量", 0))),
+            "amount": float(r.get("成交额", 0)),
+            "pct": round(pct, 2),
+        }
+
+    return result
+
+
+def fetch_realtime(codes, use_cloud=False):
+    """拉取实时行情，云端模式用akshare，本地用新浪"""
+    if not codes:
+        return {}
+    if use_cloud:
+        return fetch_realtime_akshare(codes)
+    else:
+        quotes = fetch_realtime_sina(codes)
+        # 本地模式如果新浪失败，尝试akshare兜底
+        if not quotes:
+            print("  [新浪行情失败，切换akshare]")
+            return fetch_realtime_akshare(codes)
+        return quotes
+
+
 # ============ 持仓管理 ============
 
 def load_portfolio():
@@ -178,14 +251,13 @@ def load_portfolio():
 
 def save_portfolio(portfolio):
     """保存持仓（先备份）"""
-    # 先备份
     if os.path.exists("portfolio.json"):
         backup_dir = "backups"
         os.makedirs(backup_dir, exist_ok=True)
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ts = now_beijing().strftime("%Y%m%d_%H%M%S")
         shutil.copy2("portfolio.json", f"{backup_dir}/portfolio_monitor_{ts}.json")
 
-    portfolio["last_update"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    portfolio["last_update"] = now_beijing().strftime("%Y-%m-%d %H:%M")
     with open("portfolio.json", "w", encoding="utf-8") as f:
         json.dump(portfolio, f, ensure_ascii=False, indent=2)
 
@@ -201,25 +273,38 @@ def load_watchlist(n=10):
     return sorted_scores[:n]
 
 
+# ============ 云端git提交 ============
+
+def git_commit_cloud(msg):
+    """云端模式：把交易结果提交回仓库"""
+    try:
+        subprocess.run(["git", "config", "user.name", "AI Quant Bot"], check=True)
+        subprocess.run(["git", "config", "user.email", "bot@quant.ai"], check=True)
+        subprocess.run(["git", "add", "portfolio.json"], check=True)
+        subprocess.run(["git", "add", "backups/"], check=True, capture_output=True)
+        result = subprocess.run(
+            ["git", "commit", "-m", msg],
+            capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            subprocess.run(["git", "push"], check=True, capture_output=True)
+            print(f"  [云端] 已提交: {msg}")
+            return True
+    except Exception as e:
+        print(f"  [云端提交失败] {e}")
+    return False
+
+
 # ============ 自动交易执行 ============
 
 def auto_sell(portfolio, code, name, shares, price, reason, today_str):
-    """
-    自动卖出一只股票（遵守A股规则）
-
-    返回: (success, msg)
-    """
+    """自动卖出一只股票（遵守A股规则）"""
     h = portfolio["holdings"].get(code)
     if not h:
         return False, f"[卖出失败] {name}({code}) 不在持仓中"
 
-    # A股规则1: T+1 - 今天买的不能卖
     if is_t1_blocked(h, today_str):
         return False, f"[T+1拦截] {name}({code}) 今天买入的，A股规定明天才能卖出"
-
-    # A股规则2: 跌停不能卖（卖不出）
-    # 这里无法用quote检查，因为quote已经传了price进来
-    # 但跌停的情况会在check_and_execute里提前过滤
 
     gross = shares * price
     sell_commission = gross * COMMISSION_RATE
@@ -234,7 +319,7 @@ def auto_sell(portfolio, code, name, shares, price, reason, today_str):
 
     portfolio["trades"].append({
         "date": today_str,
-        "time": datetime.now().strftime("%H:%M:%S"),
+        "time": now_beijing().strftime("%H:%M:%S"),
         "code": code,
         "name": name,
         "action": "卖出",
@@ -251,37 +336,27 @@ def auto_sell(portfolio, code, name, shares, price, reason, today_str):
     })
 
     del portfolio["holdings"][code]
-    return True, f"[自动卖出] {name}({code}) {shares}股 × {price:.2f} = ¥{gross:,.0f} 盈亏{real_pnl_pct:+.1f}% 原因:{reason}"
+    return True, f"[自动卖出] {name}({code}) {shares}股 x {price:.2f} = ¥{gross:,.0f} 盈亏{real_pnl_pct:+.1f}% 原因:{reason}"
 
 
 def auto_buy(portfolio, code, name, current_price, score, today_str):
-    """
-    自动买入一只股票（遵守A股规则）
-
-    返回: (success, msg)
-    """
-    # A股规则1: 已持有就不买
+    """自动买入一只股票（遵守A股规则）"""
     if code in portfolio["holdings"]:
         return False, f"[买入失败] {name}({code}) 已持有"
 
-    # A股规则2: 涨停不买（买不进）
-    # 这个检查在check_and_execute里通过quote做
-
-    # A股规则3: 手数限制
     lot = get_lot_size(code)
 
-    # 仓位计算
     total_value = portfolio["cash"]
     for c, h in portfolio["holdings"].items():
-        total_value += h["shares"] * h["buy_price"]  # 用buy_price近似
+        total_value += h["shares"] * h["buy_price"]
 
     fee_factor = 1 + COMMISSION_RATE + SLIPPAGE
     target_amount = total_value * MAX_SINGLE_RATIO
-    available = (portfolio["cash"] * 0.80) / fee_factor  # 留20%现金
+    available = (portfolio["cash"] * 0.80) / fee_factor
     buy_amount = min(target_amount, available)
 
     if buy_amount < current_price * lot:
-        return False, f"[买入失败] {name}({code}) 现金不足1手({lot}股×{current_price:.2f}={current_price*lot:.0f})"
+        return False, f"[买入失败] {name}({code}) 现金不足1手({lot}股x{current_price:.2f}={current_price*lot:.0f})"
 
     shares = int(buy_amount / current_price / lot) * lot
     if shares <= 0:
@@ -306,7 +381,7 @@ def auto_buy(portfolio, code, name, current_price, score, today_str):
 
     portfolio["trades"].append({
         "date": today_str,
-        "time": datetime.now().strftime("%H:%M:%S"),
+        "time": now_beijing().strftime("%H:%M:%S"),
         "code": code,
         "name": name,
         "action": "买入",
@@ -322,16 +397,11 @@ def auto_buy(portfolio, code, name, current_price, score, today_str):
         "source": "盘中自动",
     })
 
-    return True, f"[自动买入] {name}({code}) {shares}股 × {current_price:.2f} = ¥{gross:,.0f} 评分{score:.0f}"
+    return True, f"[自动买入] {name}({code}) {shares}股 x {current_price:.2f} = ¥{gross:,.0f} 评分{score:.0f}"
 
 
 def check_and_execute(portfolio, quotes, watchlist, today_str):
-    """
-    检查交易条件并执行自动交易
-
-    返回: (portfolio, trade_logs)
-    trade_logs: 本次执行的交易记录列表
-    """
+    """检查交易条件并执行自动交易"""
     trade_logs = []
     holdings = portfolio.get("holdings", {})
 
@@ -347,19 +417,16 @@ def check_and_execute(portfolio, quotes, watchlist, today_str):
 
         pnl_pct = (q["current"] / buy_price - 1) * 100
 
-        # A股规则: T+1 — 今天买的不能卖
         if is_t1_blocked(h, today_str):
             if pnl_pct <= STOP_LOSS_PCT:
                 trade_logs.append(f"[T+1憋着] {h['name']}({code}) 亏损{pnl_pct:+.1f}% 但今天刚买入，A股规定明天才能卖!")
             continue
 
-        # A股规则: 跌停不卖（卖不出）
         if is_at_limit_down(code, q):
             if pnl_pct <= STOP_LOSS_PCT:
                 trade_logs.append(f"[跌停憋着] {h['name']}({code}) 亏损{pnl_pct:+.1f}% 但已跌停卖不出，等明天!")
             continue
 
-        # 条件1: 硬止损 -5%
         if pnl_pct <= STOP_LOSS_PCT:
             success, msg = auto_sell(
                 portfolio, code, h["name"], h["shares"],
@@ -368,7 +435,6 @@ def check_and_execute(portfolio, quotes, watchlist, today_str):
             )
             trade_logs.append(msg)
 
-        # 条件2: 止盈 +10%（锁定利润）
         elif pnl_pct >= TAKE_PROFIT_PCT:
             success, msg = auto_sell(
                 portfolio, code, h["name"], h["shares"],
@@ -380,7 +446,7 @@ def check_and_execute(portfolio, quotes, watchlist, today_str):
     # ===== 买入检查 =====
     n_current = len(portfolio["holdings"])
     if n_current >= MAX_POSITIONS:
-        return portfolio, trade_logs  # 持仓已满，不买
+        return portfolio, trade_logs
 
     n_slots = MAX_POSITIONS - n_current
 
@@ -389,7 +455,6 @@ def check_and_execute(portfolio, quotes, watchlist, today_str):
         name = item.get("name", code)
         score = item.get("composite", 0)
 
-        # 已持有跳过
         if code in portfolio["holdings"]:
             continue
 
@@ -397,12 +462,10 @@ def check_and_execute(portfolio, quotes, watchlist, today_str):
         if not q or q["current"] <= 0:
             continue
 
-        # A股规则: 涨停不买
         if is_at_limit_up(code, q):
             trade_logs.append(f"[涨停跳过] {name}({code}) 涨幅{q['pct']:+.1f}% 涨停买不进")
             continue
 
-        # 买入条件: 盘中涨幅>3% 且评分>30
         if q["pct"] >= SURGE_PCT and score >= BUY_MIN_SCORE:
             success, msg = auto_buy(
                 portfolio, code, name, q["current"], score, today_str
@@ -417,33 +480,32 @@ def check_and_execute(portfolio, quotes, watchlist, today_str):
 def color_text(text, color):
     """终端彩色输出（中国习惯：涨红跌绿）"""
     colors = {
-        "red": "\033[91m",      # 涨 - 红
-        "green": "\033[92m",    # 跌 - 绿
-        "yellow": "\033[93m",   # 警告 - 黄
-        "cyan": "\033[96m",     # 信息 - 青
-        "magenta": "\033[95m",  # 交易 - 紫
+        "red": "\033[91m",
+        "green": "\033[92m",
+        "yellow": "\033[93m",
+        "cyan": "\033[96m",
+        "magenta": "\033[95m",
         "bold": "\033[1m",
         "reset": "\033[0m",
     }
     return f"{colors.get(color, '')}{text}{colors['reset']}"
 
 
-def print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks):
+def print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks, is_cloud=False):
     """打印实时仪表盘"""
     os.system("cls" if os.name == "nt" else "clear")
 
-    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    now_str = now_beijing().strftime("%Y-%m-%d %H:%M:%S")
+    today_str = today_str_beijing()
+    mode_str = "云端" if is_cloud else "本地"
 
     print("=" * 70)
-    print(f"  A股AI量化 - 盘中自动交易  |  {now_str}  |  第{n_ticks}轮")
+    print(f"  A股AI量化 - 盘中自动交易[{mode_str}模式]  |  {now_str}  |  第{n_ticks}轮")
     print("=" * 70)
 
-    # A股规则提示
     print(f"  {color_text('[A股规则]', 'yellow')} T+1 | 100股1手(科创200) | 涨跌停不交易 | 止损{STOP_LOSS_PCT}% 止盈+{TAKE_PROFIT_PCT}%")
     print()
 
-    # 持仓部分
     holdings = portfolio.get("holdings", {})
     cash = portfolio.get("cash", 0)
     print(f"{color_text('【持仓监控】', 'bold')}")
@@ -472,33 +534,29 @@ def print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks):
             market_value = shares * current
             total_value += market_value
 
-            # T+1标记
-            t1_tag = "🔒锁定" if is_t1_blocked(h, today_str) else "可卖"
+            t1_tag = "锁定" if is_t1_blocked(h, today_str) else "可卖"
 
-            # 涨跌停标记
             limit_tag = ""
             if q and q["current"] > 0:
                 if is_at_limit_up(code, q):
-                    limit_tag = "涨停"
+                    limit_tag = " 涨停"
                 elif is_at_limit_down(code, q):
-                    limit_tag = "跌停"
+                    limit_tag = " 跌停"
 
-            # 中国习惯：涨红跌绿
             pnl_color = "red" if pnl_pct > 0 else ("green" if pnl_pct < 0 else "")
             day_color = "red" if day_pct > 0 else ("green" if day_pct < 0 else "")
 
             pnl_str = color_text(f"{pnl_pct:+.1f}%{limit_tag}", pnl_color)
             day_str = color_text(f"{day_pct:+.1f}", day_color)
-            t1_str = color_text(t1_tag, "yellow" if "锁定" in t1_tag else "cyan")
+            t1_str = color_text(t1_tag, "yellow" if "锁" in t1_tag else "cyan")
 
-            print(f"  {name:<12} {buy_price:>8.2f} {current:>8.2f} {pnl_str:>17} {day_str:>17} {t1_str:>17} {market_value:>8.0f}")
+            print(f"  {name:<12} {buy_price:>8.2f} {current:>8.2f}  {pnl_str:>14}  {day_str:>10}  {t1_str:>6}  {market_value:>8.0f}")
 
         total_pnl = total_value - 1000000
         total_pct = (total_value / 1000000 - 1) * 100
         pnl_color = "red" if total_pnl > 0 else ("green" if total_pnl < 0 else "")
         print(f"\n  总资产: {total_value:>,.0f}  |  总盈亏: {color_text(f'{total_pnl:+,.0f} ({total_pct:+.2f}%)', pnl_color)}  |  现金: {cash:,.0f}")
 
-    # 候选股部分
     if watchlist:
         print(f"\n{color_text('【候选股监控】', 'bold')}  (评分TOP{min(len(watchlist),5)}只)")
         print(f"  {'股票':<12} {'现价':>8} {'日涨跌%':>8} {'评分':>6} {'状态':>8}")
@@ -512,7 +570,6 @@ def print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks):
                 day_color = "red" if q["pct"] > 0 else ("green" if q["pct"] < 0 else "")
                 day_str = color_text(f"{q['pct']:+.1f}", day_color)
 
-                # 状态判断
                 if is_at_limit_up(code, q):
                     status = color_text("涨停", "red")
                 elif q["pct"] >= SURGE_PCT and score >= BUY_MIN_SCORE and code not in holdings:
@@ -522,11 +579,10 @@ def print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks):
                 else:
                     status = color_text("平淡", "")
 
-                print(f"  {name:<12} {q['current']:>8.2f} {day_str:>17} {score:>6.0f} {status}")
+                print(f"  {name:<12} {q['current']:>8.2f}  {day_str:>10}  {score:>6.0f}  {status}")
             else:
                 print(f"  {name:<12} {'--':>8} {'--':>8} {score:>6.0f} {'--':>8}")
 
-    # 交易记录部分
     if trade_logs:
         print(f"\n{color_text('【本轮交易执行】', 'bold')}  {len(trade_logs)} 条")
         for log in trade_logs:
@@ -539,30 +595,31 @@ def print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks):
             else:
                 print(f"  {log}")
 
-    # 今日累计交易
     today_trades = [t for t in portfolio.get("trades", []) if t.get("date") == today_str and t.get("source") == "盘中自动"]
     if today_trades:
         print(f"\n{color_text('【今日累计交易】', 'bold')}  {len(today_trades)} 笔")
         for t in today_trades:
             action_str = t["action"]
             action_color = "green" if action_str == "卖出" else "magenta"
-            line = f"{action_str} {t['name']}({t['code']}) {t['shares']}股 × {t['price']}"
+            line = f"{action_str} {t['name']}({t['code']}) {t['shares']}股 x {t['price']}"
             print(f"  {color_text(line, action_color)}")
 
+    interval = CLOUD_INTERVAL if is_cloud else DEFAULT_INTERVAL
     print(f"\n{'=' * 70}")
-    print(f"  刷新: {DEFAULT_INTERVAL}秒 | 止损{STOP_LOSS_PCT}% 止盈+{TAKE_PROFIT_PCT}% 突破+{SURGE_PCT}% 买入评分≥{BUY_MIN_SCORE}")
+    print(f"  刷新: {interval}秒 | 止损{STOP_LOSS_PCT}% 止盈+{TAKE_PROFIT_PCT}% 突破+{SURGE_PCT}% 买入评分>={BUY_MIN_SCORE}")
+    if is_cloud:
+        print(f"  云端模式: akshare数据源 | 交易自动提交GitHub | 15:10自动停止")
     print(f"  Ctrl+C 退出")
     print(f"{'=' * 70}")
 
 
 # ============ 主循环 ============
 
-def run_once():
+def run_once(is_cloud=False):
     """跑一次监控+交易"""
     portfolio = load_portfolio()
     watchlist = load_watchlist(10)
 
-    # 合并需要拉取的股票代码
     holding_codes = list(portfolio.get("holdings", {}).keys())
     watch_codes = [item["code"] for item in watchlist]
     all_codes = list(set(holding_codes + watch_codes))
@@ -571,58 +628,84 @@ def run_once():
         print("[错误] 没有持仓也没有候选股，请先运行 generate_daily.py")
         return [], 0
 
-    quotes = fetch_realtime(all_codes)
+    quotes = fetch_realtime(all_codes, use_cloud=is_cloud)
 
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = today_str_beijing()
 
-    # 执行自动交易（遵守A股规则）
     portfolio, trade_logs = check_and_execute(portfolio, quotes, watchlist, today_str)
 
-    # 如果有交易，保存持仓
-    if trade_logs and any("自动" in log for log in trade_logs):
+    has_real_trade = any("自动" in log for log in trade_logs)
+    if trade_logs and has_real_trade:
         save_portfolio(portfolio)
+        # 云端模式：提交到git
+        if is_cloud:
+            trade_summary = " | ".join([log for log in trade_logs if "自动" in log][:3])
+            git_commit_cloud(f"盘中交易: {trade_summary}")
 
     return trade_logs, len(quotes)
 
 
-def run_loop(interval=DEFAULT_INTERVAL):
+def run_loop(interval=DEFAULT_INTERVAL, is_cloud=False):
     """盘中持续监控+自动交易循环"""
-    print(f"\n{color_text('⚠️ A股盘中自动交易系统启动 ⚠️', 'yellow')}")
+    if is_cloud:
+        interval = CLOUD_INTERVAL
+
+    mode_str = "云端" if is_cloud else "本地"
+    print(f"\n{color_text('A股盘中自动交易系统启动[' + mode_str + '模式]', 'yellow')}")
     print(f"  模拟盘 | 每{interval}秒刷新 | 遵守A股T+1/涨跌停/手数规则")
-    print(f"  止损{STOP_LOSS_PCT}% 止盈+{TAKE_PROFIT_PCT}% 突破买入评分≥{BUY_MIN_SCORE}")
+    print(f"  止损{STOP_LOSS_PCT}% 止盈+{TAKE_PROFIT_PCT}% 突破买入评分>={BUY_MIN_SCORE}")
+    if is_cloud:
+        print(f"  数据源: akshare(东方财富) | 交易自动提交GitHub | 15:10自动停止")
     print(f"  正在加载持仓和候选股...\n")
 
     n_ticks = 0
 
     while True:
+        # 云端模式：15:10自动停止
+        if is_cloud and should_stop_cloud():
+            print(f"\n{color_text('[15:10] 收盘，云端任务自动停止', 'cyan')}")
+            # 最后保存一次
+            try:
+                git_commit_cloud("收盘自动保存")
+            except:
+                pass
+            break
+
         trading, msg = is_trading_hours()
         if not trading:
-            os.system("cls" if os.name == "nt" else "clear")
-            print(f"\n  [非交易时间] {msg}")
-            print(f"  系统等待交易时间(9:30-11:30, 13:00-15:00)...")
-            print(f"  每5分钟检查一次。Ctrl+C退出。\n")
-            time.sleep(300)
-            continue
+            if is_cloud:
+                # 云端模式：非交易时间等待5分钟后重试
+                print(f"  [{now_beijing().strftime('%H:%M')}] 非交易时间: {msg}，等待5分钟...")
+                time.sleep(300)
+                continue
+            else:
+                os.system("cls" if os.name == "nt" else "clear")
+                print(f"\n  [非交易时间] {msg}")
+                print(f"  系统等待交易时间(9:30-11:30, 13:00-15:00)...")
+                print(f"  每5分钟检查一次。Ctrl+C退出。\n")
+                time.sleep(300)
+                continue
 
         try:
             n_ticks += 1
-            trade_logs, n_quotes = run_once()
+            trade_logs, n_quotes = run_once(is_cloud=is_cloud)
 
-            # 重新加载portfolio以获取最新数据
             portfolio = load_portfolio()
             watchlist = load_watchlist(10)
             holding_codes = list(portfolio.get("holdings", {}).keys())
             watch_codes = [item["code"] for item in watchlist]
             all_codes = list(set(holding_codes + watch_codes))
-            quotes = fetch_realtime(all_codes) if all_codes else {}
+            quotes = fetch_realtime(all_codes, use_cloud=is_cloud) if all_codes else {}
 
-            print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks)
+            print_dashboard(portfolio, quotes, watchlist, trade_logs, n_ticks, is_cloud=is_cloud)
 
         except KeyboardInterrupt:
             print(f"\n\n{color_text('交易系统已停止。', 'yellow')}")
             sys.exit(0)
         except Exception as e:
             print(f"\n[错误] {e}")
+            import traceback
+            traceback.print_exc()
             print("10秒后重试...")
 
         time.sleep(interval)
@@ -634,25 +717,18 @@ if __name__ == "__main__":
     parser.add_argument("--interval", type=int, default=DEFAULT_INTERVAL, help=f"刷新间隔秒数 (默认{DEFAULT_INTERVAL})")
     parser.add_argument("--once", action="store_true", help="只跑一次（测试用）")
     parser.add_argument("--force", action="store_true", help="非交易时间也强制运行")
+    parser.add_argument("--cloud", action="store_true", help="云端模式（GitHub Actions用）")
     args = parser.parse_args()
 
-    if args.once:
-        trade_logs, _ = run_once()
+    if args.once or args.force:
+        is_cloud = args.cloud
+        trade_logs, _ = run_once(is_cloud=is_cloud)
         portfolio = load_portfolio()
         watchlist = load_watchlist(10)
         holding_codes = list(portfolio.get("holdings", {}).keys())
         watch_codes = [item["code"] for item in watchlist]
         all_codes = list(set(holding_codes + watch_codes))
-        quotes = fetch_realtime(all_codes) if all_codes else {}
-        print_dashboard(portfolio, quotes, watchlist, trade_logs, 1)
-    elif args.force:
-        trade_logs, _ = run_once()
-        portfolio = load_portfolio()
-        watchlist = load_watchlist(10)
-        holding_codes = list(portfolio.get("holdings", {}).keys())
-        watch_codes = [item["code"] for item in watchlist]
-        all_codes = list(set(holding_codes + watch_codes))
-        quotes = fetch_realtime(all_codes) if all_codes else {}
-        print_dashboard(portfolio, quotes, watchlist, trade_logs, 1)
+        quotes = fetch_realtime(all_codes, use_cloud=is_cloud) if all_codes else {}
+        print_dashboard(portfolio, quotes, watchlist, trade_logs, 1, is_cloud=is_cloud)
     else:
-        run_loop(args.interval)
+        run_loop(args.interval, is_cloud=args.cloud)

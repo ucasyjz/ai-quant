@@ -1,0 +1,55 @@
+name: A股盘中实时交易
+
+on:
+  # 定时触发：每个交易日北京时间 9:25 启动（UTC 1:25）
+  # 任务持续运行到 15:10 自动停止（约5.5小时，在6小时限制内）
+  schedule:
+    - cron: '25 1 * * 1-5'
+  # 手动触发
+  workflow_dispatch:
+
+permissions:
+  contents: write   # 需要写权限来提交交易结果
+
+jobs:
+  realtime-trade:
+    runs-on: ubuntu-latest
+    # GitHub Actions 单任务最长6小时 = 360分钟
+    # 9:25启动，15:10停止 = 5小时45分 = 345分钟
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Real-time Trading Monitor
+        env:
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: '1'
+          TZ: Asia/Shanghai
+        run: |
+          echo "=========================================="
+          echo "  A股盘中实时交易系统启动"
+          echo "  北京时间: $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S')"
+          echo "  将持续运行到 15:10 自动停止"
+          echo "=========================================="
+          python realtime_monitor.py --cloud
+
+      - name: Final commit
+        if: always()
+        run: |
+          git config user.name "AI Quant Bot"
+          git config user.email "bot@quant.ai"
+          git add portfolio.json backups/ 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "盘中交易结束: $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')"
+          git push 2>/dev/null || true
