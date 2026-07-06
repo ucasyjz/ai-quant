@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pkgs/
+
+# 数据缓存（每次运行重新拉取，不需要提交）
+cache_*.csv
+data_cache.csv
+
+# 备份
+backups/
+
+# 临时文件
+*.png
+*.log
+*.tmp
+
+# WorkBuddy 本地数据
+.workbuddy/
+
+# OS
+.DS_Store
+Thumbs.db

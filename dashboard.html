@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI 量化终端</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter','Noto Sans SC','-apple-system','PingFang SC','Microsoft YaHei','sans-serif'],
+        mono: ['JetBrains Mono','SF Mono','Consolas','monospace'],
+      },
+      colors: {
+        bg0: '#080d16',
+        bg1: '#0c1320',
+        bg2: '#111a2a',
+        bg3: '#162032',
+        bg4: '#1c2a3c',
+        accent: {DEFAULT:'#4a90d9',light:'#6ba8e8',dim:'rgba(74,144,217,0.08)'},
+        up: {DEFAULT:'#e74c3c',soft:'rgba(231,76,60,0.12)',text:'#f07070'},
+        down: {DEFAULT:'#27ae60',soft:'rgba(39,174,96,0.12)',text:'#2ecc71'},
+        warn: {DEFAULT:'#f0a030',soft:'rgba(240,160,48,0.12)',text:'#f5b850'},
+        mute: {DEFAULT:'#6b7d95',light:'#8fa0b8',dark:'#3d4f65'},
+      }
+    }
+  }
+}
+</script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  body{
+    font-family:'Inter','Noto Sans SC','-apple-system','PingFang SC','Microsoft YaHei',sans-serif;
+    background:#080d16;color:#e2e8f0;min-height:100vh;line-height:1.6;
+    background-image:
+      radial-gradient(ellipse 70% 40% at 15% -5%, rgba(74,144,217,0.03), transparent),
+      radial-gradient(ellipse 50% 40% at 85% 95%, rgba(74,144,217,0.02), transparent);
+  }
+  .mono{font-family:'JetBrains Mono','SF Mono','Consolas',monospace;font-variant-numeric:tabular-nums}
+
+  /* 卡片 */
+  .card{
+    background:rgba(12,19,32,0.9);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:12px;
+    transition:border-color 0.3s,box-shadow 0.3s;
+  }
+  .card:hover{border-color:rgba(255,255,255,0.1);box-shadow:0 4px 24px rgba(0,0,0,0.3),0 0 0 1px rgba(74,144,217,0.02)}
+
+  /* 区块标题 */
+  .sec-hd{
+    display:flex;align-items:center;gap:10px;
+    font-size:13px;font-weight:700;color:#c8d6e5;
+    letter-spacing:0.02em;
+  }
+  .sec-hd::before{
+    content:'';width:3px;height:15px;border-radius:2px;
+    background:linear-gradient(180deg,#4a90d9,#6ba8e8);
+  }
+
+  /* 玻璃按钮 */
+  .tag{
+    font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:0.02em;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .tag-up{background:rgba(231,76,60,0.12);color:#f07070;border-color:rgba(231,76,60,0.2)}
+  .tag-down{background:rgba(39,174,96,0.12);color:#2ecc71;border-color:rgba(39,174,96,0.2)}
+  .tag-idle{background:rgba(240,160,48,0.12);color:#f5b850;border-color:rgba(240,160,48,0.2)}
+
+  /* 状态点 */
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .dot-live{background:#27ae60;box-shadow:0 0 8px rgba(39,174,96,0.5);animation:pulse 2s infinite}
+  .dot-off{background:#f0a030;box-shadow:0 0 5px rgba(240,160,48,0.3)}
+  @keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(39,174,96,0.5)}50%{box-shadow:0 0 18px rgba(39,174,96,0.8)}}
+
+  /* 温度计 */
+  .thermo-wrap{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,#27ae60 0%,#7f8c8d 40%,#8e9ea8 60%,#e74c3c 100%)}
+  .thermo-ptr{position:absolute;top:-6px;width:4px;height:18px;border-radius:2px;background:#fff;transform:translateX(-50%);box-shadow:0 0 14px rgba(255,255,255,0.5);transition:left 1.5s cubic-bezier(.16,1,.3,1)}
+
+  /* 进度条 */
+  .bar-wrap{height:6px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;flex:1}
+  .bar-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.16,1,.3,1)}
+
+  /* 动画 */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity 0.55s cubic-bezier(.16,1,.3,1),transform 0.55s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .ticker{display:inline-block;animation:tickIn 0.45s ease-out both}
+  @keyframes tickIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+  /* 表格 */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl thead th{
+    font-size:10.5px;font-weight:600;color:#6b7d95;letter-spacing:0.05em;
+    padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.05);
+    white-space:nowrap;
+  }
+  .tbl tbody td{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.025)}
+  .tbl tbody tr{transition:background 0.15s}
+  .tbl tbody tr:hover{background:rgba(255,255,255,0.012)}
+
+  /* 3D宇宙区 */
+  .univ{position:relative;height:420px;border-radius:12px;background:radial-gradient(ellipse at center,rgba(12,19,32,0.8),#080d16 75%);border:1px solid rgba(255,255,255,0.06);overflow:hidden}
+  #univCanvas{display:block;width:100%;height:100%}
+  .univ-lbl{position:absolute;top:16px;left:20px;z-index:2;pointer-events:none}
+  .univ-leg{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:12px;flex-wrap:wrap;justify-content:center;z-index:2;font-size:10px;color:#6b7d95}
+
+  /* 3D 浮窗 */
+  #tip{
+    position:fixed;pointer-events:none;z-index:999;opacity:0;transition:opacity 0.12s;
+    background:rgba(10,16,28,0.98);border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;padding:14px 18px;
+    backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+    box-shadow:0 16px 48px rgba(0,0,0,0.6);min-width:200px;font-size:12px;
+  }
+  #tip.active{opacity:1}
+  .tip-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;margin-top:8px}
+
+  /* 图表容器 */
+  .chart{position:relative;width:100%}
+  .chart-lg{height:320px}
+  .chart-md{height:260px}
+
+  /* 滚动条 */
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:3px}
+
+  /* 终端文字 */
+  .terminal{
+    background:rgba(6,10,18,0.8);border:1px solid rgba(255,255,255,0.05);
+    border-radius:10px;padding:18px 22px;font-size:12px;line-height:1.9;
+    color:#8fa0b8;white-space:pre-wrap;max-height:480px;overflow-y:auto;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶栏 ===== -->
+<header style="position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(8,13,22,0.86);backdrop-filter:blur(20px)">
+  <div style="max-width:1440px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4a90d9,#6ba8e8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:900">Q</div>
+      <span style="font-size:13px;font-weight:700;color:#fff;letter-spacing:-0.01em">AI 量化终端</span>
+      <span style="font-size:9px;color:#6b7d95;letter-spacing:0.06em;margin-top:-1px">V6.0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px">
+      <div id="marketBadge" style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600">
+        <span class="dot dot-off"></span>
+        <span style="color:#8fa0b8">加载中...</span>
+      </div>
+      <div id="clock" class="mono" style="font-size:11px;color:#6b7d95">--:--:--</div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 主区域 ===== -->
+<main id="app" style="max-width:1440px;margin:0 auto;padding:0 24px 60px;padding-top:24px">
+  <div style="display:flex;align-items:center;justify-content:center;padding:120px 0;color:#6b7d95;flex-direction:column">
+    <div style="font-size:40px;margin-bottom:16px;opacity:0.25">■</div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:4px">正在加载终端</div>
+    <div style="font-size:12px">连接数据源...</div>
+  </div>
+</main>
+
+<!-- ===== 模板 ===== -->
+<template id="t-dash">
+
+<!-- 市场横幅 -->
+<div class="reveal card" id="banner" style="margin-bottom:20px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="banIcon" style="font-size:22px"></span>
+    <div>
+      <div id="banTitle" style="font-size:14px;font-weight:700;color:#fff"></div>
+      <div id="banSub" style="font-size:11px;color:#8fa0b8;margin-top:2px"></div>
+    </div>
+  </div>
+  <div id="banCount" class="mono" style="font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04)"></div>
+</div>
+
+<!-- 3D 因子宇宙 -->
+<div class="univ reveal" style="animation-delay:80ms">
+  <canvas id="univCanvas"></canvas>
+  <div class="univ-lbl">
+    <div style="font-size:14px;font-weight:700;background:linear-gradient(135deg,#4a90d9,#6ba8e8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">因子宇宙</div>
+    <div style="font-size:10px;color:#6b7d95;margin-top:4px">拖拽旋转 · 滚轮缩放 · 悬停详情</div>
+  </div>
+  <div class="univ-leg" id="univLeg"></div>
+</div>
+
+<!-- 浮窗 -->
+<div id="tip">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+    <span style="font-weight:700;font-size:13px" id="tipN"></span>
+    <span style="font-size:10px;color:#6b7d95" id="tipC"></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <span style="font-size:10px;color:#8fa0b8" id="tipSec"></span>
+    <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px" id="tipSig"></span>
+  </div>
+  <div class="tip-grid">
+    <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:#6b7d95">趋势</span><span class="mono" style="font-weight:600" id="tipT">-</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:#6b7d95">动量</span><span class="mono" style="font-weight:600" id="tipM">-</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:#6b7d95">量能</span><span class="mono" style="font-weight:600" id="tipV">-</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:#6b7d95">回归</span><span class="mono" style="font-weight:600" id="tipMR">-</span></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);font-size:13px;font-weight:700">
+    <span>综合评分</span><span id="tipCmp">-</span>
+  </div>
+</div>
+
+<!-- 标题 -->
+<div class="reveal" style="animation-delay:120ms;margin-top:24px;margin-bottom:24px">
+  <h1 style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.02em;line-height:1.3">
+    多因子 <span style="background:linear-gradient(135deg,#4a90d9,#6ba8e8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">AI 信号引擎</span>
+  </h1>
+  <p id="heroTxt" style="font-size:13px;color:#6b7d95;margin-top:6px"></p>
+</div>
+
+<!-- KPI -->
+<div class="reveal" style="animation-delay:160ms;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px" id="kpiRow">
+  <div class="card" style="padding:18px 20px">
+    <div style="font-size:10px;font-weight:600;color:#6b7d95;letter-spacing:0.04em;margin-bottom:6px">账户总资产</div>
+    <div class="mono" style="font-size:22px;font-weight:800;color:#fff" id="kpiVal">--</div>
+    <div style="font-size:11px;margin-top:6px" id="kpiRet"></div>
+  </div>
+  <div class="card" style="padding:18px 20px">
+    <div style="font-size:10px;font-weight:600;color:#6b7d95;letter-spacing:0.04em;margin-bottom:6px">可用资金 / 已部署</div>
+    <div class="mono" style="font-size:22px;font-weight:800;color:#fff" id="kpiCash">--</div>
+    <div style="font-size:11px;color:#8fa0b8;margin-top:6px" id="kpiDeploy"></div>
+  </div>
+  <div class="card" style="padding:18px 20px">
+    <div style="font-size:10px;font-weight:600;color:#6b7d95;letter-spacing:0.04em;margin-bottom:6px">持仓数量</div>
+    <div class="mono" style="font-size:22px;font-weight:800;color:#fff" id="kpiPos">--</div>
+    <div style="font-size:11px;color:#8fa0b8;margin-top:6px" id="kpiTrade"></div>
+  </div>
+  <div class="card" style="padding:18px 20px">
+    <div style="font-size:10px;font-weight:600;color:#6b7d95;letter-spacing:0.04em;margin-bottom:6px">今日信号</div>
+    <div class="mono" style="font-size:22px;font-weight:800;color:#fff" id="kpiSig">--</div>
+    <div style="font-size:11px;margin-top:6px" id="kpiSD"></div>
+  </div>
+</div>
+
+<!-- 市场温度计 -->
+<div class="card reveal" style="animation-delay:200ms;padding:18px 20px;margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <span class="sec-hd">市场情绪</span>
+    <span id="thermoLbl" style="font-size:13px;font-weight:700"></span>
+  </div>
+  <div class="thermo-wrap"><div class="thermo-ptr" id="thermoPtr" style="left:50%"></div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#6b7d95">
+    <span>偏空</span><span>中性</span><span>偏多</span>
+  </div>
+</div>
+
+<!-- 交易计划 -->
+<div class="reveal" style="animation-delay:240ms;margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <span class="sec-hd">交易计划</span>
+    <span id="planTag" class="tag tag-idle"></span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <div class="card" style="padding:16px;min-height:140px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04)">
+        <span style="font-size:12px;font-weight:700;color:#f07070">▲ 买入信号</span>
+        <span id="buyN" class="mono" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.03);color:#fff">0</span>
+      </div>
+      <div id="buyLs" style="font-size:12px;color:#6b7d95;text-align:center;padding:30px 0">暂无信号</div>
+    </div>
+    <div class="card" style="padding:16px;min-height:140px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04)">
+        <span style="font-size:12px;font-weight:700;color:#2ecc71">▼ 卖出信号</span>
+        <span id="sellN" class="mono" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.03);color:#fff">0</span>
+      </div>
+      <div id="sellLs" style="font-size:12px;color:#6b7d95;text-align:center;padding:30px 0">暂无信号</div>
+    </div>
+    <div class="card" style="padding:16px;min-height:140px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04)">
+        <span style="font-size:12px;font-weight:700;color:#8fa0b8">■ 继续持有</span>
+        <span id="holdN" class="mono" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.03);color:#fff">0</span>
+      </div>
+      <div id="holdLs" style="font-size:12px;color:#6b7d95;text-align:center;padding:30px 0">暂无持仓</div>
+    </div>
+  </div>
+</div>
+
+<!-- 评分排行 -->
+<div class="card reveal" style="animation-delay:280ms;padding:18px 20px;margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <span class="sec-hd">综合评分排行</span>
+    <span id="scoreN" style="font-size:11px;font-weight:600;color:#6b7d95"></span>
+  </div>
+  <div class="chart chart-lg"><canvas id="scoreCh"></canvas></div>
+</div>
+
+<!-- 因子雷达 + 板块热度 -->
+<div class="reveal" style="animation-delay:320ms;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+  <div class="card" style="padding:18px 20px">
+    <span class="sec-hd" style="margin-bottom:8px;display:flex">因子雷达</span>
+    <div class="chart chart-md"><canvas id="radarCh"></canvas></div>
+  </div>
+  <div class="card" style="padding:18px 20px">
+    <span class="sec-hd" style="margin-bottom:8px;display:flex">板块热度</span>
+    <div class="chart chart-md"><canvas id="sectorCh"></canvas></div>
+  </div>
+</div>
+
+<!-- 持仓明细 -->
+<div class="card reveal" style="animation-delay:360ms;padding:18px 20px;margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <span class="sec-hd">持仓明细</span>
+    <span id="holdLbl" style="font-size:11px;font-weight:600;color:#6b7d95"></span>
+  </div>
+  <div style="overflow-x:auto"><table class="tbl" id="holdTbl"><thead></thead><tbody></tbody></table></div>
+</div>
+
+<!-- 资金曲线 -->
+<div class="card reveal" style="animation-delay:400ms;padding:18px 20px;margin-bottom:20px">
+  <span class="sec-hd" style="margin-bottom:8px;display:flex">资金曲线</span>
+  <div class="chart chart-md"><canvas id="navCh"></canvas></div>
+</div>
+
+<!-- 交易记录 -->
+<div class="card reveal" style="animation-delay:440ms;padding:18px 20px;margin-bottom:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <span class="sec-hd">交易记录</span>
+    <span id="tradeLbl" style="font-size:11px;font-weight:600;color:#6b7d95"></span>
+  </div>
+  <div style="overflow-x:auto"><table class="tbl" id="tradeTbl"><thead></thead><tbody></tbody></table></div>
+</div>
+
+<!-- 复盘锚点 -->
+<div id="reviewSlot"></div>
+
+<!-- 页脚 -->
+<div class="reveal" style="animation-delay:480ms;text-align:center;padding-top:32px;margin-top:32px;border-top:1px solid rgba(255,255,255,0.04);font-size:10px;color:#3d4f65">
+  <p style="margin-bottom:4px">AI 量化终端 V6.0 · 多因子信号引擎 · 数据来源：腾讯自选股</p>
+  <p id="footT"></p>
+</div>
+</template>
+
+<!-- ===== 复盘模板 ===== -->
+<template id="t-review">
+<div class="card reveal" style="animation-delay:600ms;overflow:hidden;margin-bottom:20px">
+  <div style="padding:16px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(74,144,217,0.03)">
+    <span style="font-size:20px">🧠</span>
+    <span style="font-size:14px;font-weight:700;flex:1">AI 自我复盘与进化</span>
+    <span id="revDt" class="mono" style="font-size:11px;color:#6b7d95"></span>
+  </div>
+  <div style="padding:20px">
+    <div style="margin-bottom:20px">
+      <h3 style="font-size:11px;font-weight:700;color:#6b7d95;letter-spacing:0.04em;margin-bottom:14px">因子权重 <span style="color:#4a90d9;font-weight:400">(第 <span id="revN">0</span> 次进化)</span></h3>
+      <div id="revW" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+    <div id="revAdjBox" style="margin-bottom:20px">
+      <h3 style="font-size:11px;font-weight:700;color:#6b7d95;letter-spacing:0.04em;margin-bottom:14px">AI 参数调整</h3>
+      <div id="revAdj" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+    <div>
+      <h3 style="font-size:11px;font-weight:700;color:#6b7d95;letter-spacing:0.04em;margin-bottom:14px">复盘报告</h3>
+      <div class="terminal" id="revRpt"></div>
+    </div>
+  </div>
+</div>
+</template>
+
+<script type="module">
+const F_NAMES = {trend:'趋势因子',momentum:'动量因子',volume:'量能因子',mean_reversion:'回归因子'};
+const F_COLORS = {trend:'#4a90d9',momentum:'#8b7cf8',volume:'#f0a030',mean_reversion:'#27ae60'};
+const SEC_COLORS = ['#4a90d9','#8b7cf8','#e06090','#27ae60','#f0a030','#e87040','#9b7cf8','#40b8d0','#50d880','#e05050'];
+
+function fmtN(n,d){const v=Number(n);return isNaN(v)?'--':v.toLocaleString('zh-CN',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+function fmtP(n){const v=Number(n);return isNaN(v)?'--':(v>=0?'+':'')+v.toFixed(1)+'%'}
+
+function sigRows(items,type){
+  if(!items||!items.length) return '<div style="font-size:12px;color:#6b7d95;text-align:center;padding:30px 0">暂无'+(type==='buy'?'买入':type==='sell'?'卖出':'持仓')+'信号</div>';
+  const clr={buy:'#f07070',sell:'#2ecc71',hold:'#8fa0b8'};
+  const bg={buy:'rgba(231,76,60,0.08)',sell:'rgba(39,174,96,0.08)',hold:'rgba(255,255,255,0.02)'};
+  const sym={buy:'▲',sell:'▼',hold:'■'};
+  return items.slice(0,8).map(s=>{
+    let detail;
+    if(type==='buy') detail='买入 '+fmtN(s.shares)+'股 · ¥'+fmtN(s.price,2)+' · 金额 ¥'+fmtN(s.amount);
+    else if(type==='sell') detail='卖出 '+fmtN(s.shares)+'股 · ¥'+fmtN(s.price,2);
+    else detail=s.reason||'继续持有';
+    const pnlH = (type!=='buy'&&s.pnl_pct!=null)
+      ? '<span class="mono" style="font-size:11px;font-weight:700;color:'+(s.pnl_pct>=0?'#f07070':'#2ecc71')+';margin-left:auto">'+fmtP(s.pnl_pct)+'</span>'
+      : '';
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02)">'+
+      '<span style="width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;color:'+clr[type]+';background:'+bg[type]+'">'+sym[type]+'</span>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="display:flex;align-items:center;gap:6px">'+
+          '<span style="font-size:12px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.name+'</span>'+
+          '<span style="font-size:10px;color:#6b7d95;flex-shrink:0">'+s.code+'</span>'+
+          '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;background:rgba(255,255,255,0.03);color:#8fa0b8;margin-left:auto;flex-shrink:0">'+fmtN(s.score,0)+'分</span>'+
+          pnlH+
+        '</div>'+
+        '<div style="font-size:10px;color:#6b7d95;margin-top:3px">'+detail+'</div>'+
+      '</div></div>';
+  }).join('');
+}
+
+function holdTable(holdings){
+  if(!holdings||!holdings.length) return '<thead><tr><th>状态</th></tr></thead><tbody><tr><td><div style="font-size:12px;color:#6b7d95;text-align:center;padding:28px 0">暂无持仓 &mdash; 资金全为现金</div></td></tr></tbody>';
+  const th='<thead><tr><th>股票名称</th><th>持仓数量</th><th>成本 / 现价</th><th>市值</th><th>盈亏</th><th>仓位占比</th></tr></thead>';
+  const tv=holdings.reduce((s,x)=>s+(x.value||0),0);
+  const tb='<tbody>'+holdings.map(h=>{
+    const cl=(h.pnl||0)>=0?'#f07070':'#2ecc71';
+    const w=tv>0?(h.value||0)/tv*100:0;
+    return '<tr>'+
+      '<td><span style="font-weight:600;color:#fff;font-size:12px">'+h.name+'</span><br><span style="font-size:10px;color:#6b7d95">'+h.code+'</span></td>'+
+      '<td class="mono" style="font-size:12px">'+fmtN(h.shares)+'股</td>'+
+      '<td><span style="color:#6b7d95;font-size:12px">¥'+fmtN(h.cost/h.shares,2)+'</span> <span style="color:#fff;font-size:12px">¥'+fmtN(h.price,2)+'</span></td>'+
+      '<td class="mono" style="font-size:12px;font-weight:600;color:#fff">¥'+fmtN(h.value)+'</td>'+
+      '<td class="mono" style="font-size:12px;font-weight:700;color:'+cl+'">'+fmtP(h.pnl_pct)+'<br><span style="font-weight:400;font-size:10px">¥'+fmtN(h.pnl)+'</span></td>'+
+      '<td><div style="display:flex;align-items:center;gap:8px"><div class="bar-wrap" style="width:50px"><div class="bar-fill" style="width:'+w.toFixed(0)+'%;background:#4a90d9"></div></div><span class="mono" style="font-size:10px;color:#6b7d95">'+w.toFixed(1)+'%</span></div></td>'+
+    '</tr>';
+  }).join('')+'</tbody>';
+  return th+tb;
+}
+
+function tradeTable(trades){
+  if(!trades||!trades.length) return '<thead><tr><th>记录</th></tr></thead><tbody><tr><td><div style="font-size:12px;color:#6b7d95;text-align:center;padding:28px 0">暂无交易记录</div></td></tr></tbody>';
+  const rev=[...trades].reverse();
+  const th='<thead><tr><th>日期</th><th>操作</th><th>股票</th><th>数量</th><th>价格</th><th>金额</th><th>盈亏</th><th>原因</th></tr></thead>';
+  const tb='<tbody>'+rev.map(t=>{
+    const isBuy=t.action==='买入';
+    const cl=(t.pnl||0)>0?'#f07070':(t.pnl||0)<0?'#2ecc71':'#8fa0b8';
+    return '<tr>'+
+      '<td style="font-size:10px;color:#6b7d95">'+t.date+'</td>'+
+      '<td><span class="tag '+(isBuy?'tag-up':'tag-down')+'">'+t.action+'</span></td>'+
+      '<td><span style="font-weight:600;color:#fff;font-size:12px">'+t.name+'</span><br><span style="font-size:10px;color:#6b7d95">'+t.code+'</span></td>'+
+      '<td class="mono" style="font-size:12px">'+fmtN(t.shares)+'</td>'+
+      '<td class="mono" style="font-size:12px;color:#fff">¥'+fmtN(t.price,2)+'</td>'+
+      '<td class="mono" style="font-size:12px;font-weight:600;color:#fff">¥'+fmtN(t.amount)+'</td>'+
+      '<td class="mono" style="font-size:12px;font-weight:700;color:'+cl+'">'+(isBuy?'—':fmtN(t.pnl))+'</td>'+
+      '<td style="font-size:10px;color:#6b7d95;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(t.reason||'')+'</td>'+
+    '</tr>';
+  }).join('')+'</tbody>';
+  return th+tb;
+}
+
+// Chart.js 全局主题
+Chart.defaults.color='#8fa0b8';
+Chart.defaults.borderColor='rgba(255,255,255,0.04)';
+Chart.defaults.font.family="'Inter','Noto Sans SC','PingFang SC',sans-serif";
+Chart.defaults.font.size=10;
+Chart.defaults.plugins.tooltip.backgroundColor='rgba(10,16,28,0.97)';
+Chart.defaults.plugins.tooltip.titleColor='#e2e8f0';
+Chart.defaults.plugins.tooltip.bodyColor='#8fa0b8';
+Chart.defaults.plugins.tooltip.borderColor='rgba(255,255,255,0.1)';
+Chart.defaults.plugins.tooltip.borderWidth=1;
+Chart.defaults.plugins.tooltip.padding=12;
+Chart.defaults.plugins.tooltip.cornerRadius=8;
+Chart.defaults.animation.duration=800;
+Chart.defaults.animation.easing='easeOutQuart';
+
+// ============ 主流程 ============
+async function main(){
+  let d;
+  try{
+    const r=await fetch('./data.json?'+Date.now());
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    d=await r.json();
+  }catch(e){
+    document.getElementById('app').innerHTML=
+      '<div style="display:flex;align-items:center;justify-content:center;padding:100px 0;flex-direction:column">'+
+        '<div style="font-size:40px;margin-bottom:16px;opacity:0.25">⚠</div>'+
+        '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:6px">数据加载失败</div>'+
+        '<div style="font-size:13px;color:#6b7d95;margin-bottom:16px">请运行 <code style="background:rgba(74,144,217,0.1);padding:3px 8px;border-radius:4px;color:#4a90d9;font-size:12px">python generate_daily.py</code> 生成数据</div>'+
+        '<div style="font-size:11px;color:#6b7d95">然后执行 <code style="background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:4px;color:#8fa0b8;font-size:11px">python -m http.server 8765</code> 启动本地服务器</div>'+
+      '</div>';
+    return;
+  }
+
+  const app=document.getElementById('app');
+  app.innerHTML=document.getElementById('t-dash').innerHTML;
+
+  const mk=d.market, pf=d.portfolio, pl=d.plan, sc=d.scores;
+
+  // 市场状态
+  const badge=document.getElementById('marketBadge');
+  if(mk.is_trading){
+    badge.innerHTML='<span class="dot dot-live"></span><span style="color:#2ecc71">交易中</span>';
+  }else{
+    badge.innerHTML='<span class="dot dot-off"></span><span style="color:#f0a030">已休市</span>';
+  }
+
+  // 横幅
+  document.getElementById('banIcon').textContent=mk.is_trading?'📈':'⏰';
+  document.getElementById('banTitle').textContent=mk.status;
+  if(mk.is_trading){
+    document.getElementById('banSub').textContent='今日 '+mk.today+' · 实时交易中';
+    document.getElementById('banCount').textContent='交易中';
+    document.getElementById('banCount').style.color='#2ecc71';
+  }else{
+    document.getElementById('banSub').textContent='上一交易日：'+mk.prev_date;
+    document.getElementById('banCount').innerHTML='下一交易日：<span style="color:#f0a030">'+mk.next_date+'</span> '+mk.next_weekday;
+    document.getElementById('planTag').textContent='预览模式';
+    document.getElementById('banner').style.background='rgba(240,160,48,0.04)';
+    document.getElementById('banner').style.borderColor='rgba(240,160,48,0.1)';
+  }
+
+  // 副标题
+  document.getElementById('heroTxt').textContent='全市场扫描 '+sc.market_overview.total_scored+' 只标的 · '+sc.sector_avg.length+' 个板块 · 四因子 AI 综合评分';
+
+  // KPI
+  document.getElementById('kpiVal').textContent='¥'+fmtN(pf.total_value);
+  document.getElementById('kpiRet').innerHTML=
+    (pf.total_return_pct>=0?'<span style="color:#f07070">'+fmtP(pf.total_return_pct)+'</span>':'<span style="color:#2ecc71">'+fmtP(pf.total_return_pct)+'</span>')+
+    ' <span style="color:#6b7d95">对比初始 ¥'+fmtN(pf.init_cash)+'</span>';
+
+  const deployed=pf.total_value>0?pf.market_value/pf.total_value*100:0;
+  document.getElementById('kpiCash').textContent='¥'+fmtN(pf.cash);
+  document.getElementById('kpiDeploy').textContent='已部署 '+deployed.toFixed(0)+'% · 现金 '+((100-deployed).toFixed(0))+'%';
+
+  document.getElementById('kpiPos').innerHTML=pf.holding_count+' <span style="font-size:16px;color:#3d4f65;font-weight:400">/ 5</span>';
+  document.getElementById('kpiTrade').textContent='累计 '+pf.trade_count+' 笔交易';
+
+  if(mk.is_trading){
+    const tSig=pl.buy_count+pl.sell_count;
+    document.getElementById('kpiSig').textContent=tSig;
+    document.getElementById('kpiSD').innerHTML=
+      '<span style="color:#f07070;font-weight:600">买入 '+pl.buy_count+'</span><span style="color:#3d4f65;margin:0 6px">·</span><span style="color:#2ecc71;font-weight:600">卖出 '+pl.sell_count+'</span>';
+  }else{
+    document.getElementById('kpiSig').innerHTML='<span style="color:#f0a030;font-size:16px">休市</span>';
+    document.getElementById('kpiSD').textContent=mk.next_weekday+' '+mk.next_date+' 开盘';
+  }
+
+  // 温度计
+  const tp=sc.market_overview.thermo_pct;
+  setTimeout(()=>{document.getElementById('thermoPtr').style.left=tp+'%'},500);
+  const tl=document.getElementById('thermoLbl');
+  tl.textContent=sc.market_overview.sentiment+' · 均分 '+fmtN(sc.market_overview.avg_score,1);
+  tl.style.color=sc.market_overview.avg_score>=0?'#f07070':'#2ecc71';
+
+  // 交易计划
+  document.getElementById('buyN').textContent=pl.buy_count;
+  document.getElementById('sellN').textContent=pl.sell_count;
+  document.getElementById('holdN').textContent=pl.hold_count;
+  document.getElementById('buyLs').innerHTML=sigRows(pl.buy,'buy');
+  document.getElementById('sellLs').innerHTML=sigRows(pl.sell,'sell');
+  document.getElementById('holdLs').innerHTML=sigRows(pl.hold,'hold');
+
+  // 评分排行图
+  document.getElementById('scoreN').textContent='Top 20 / 共 '+sc.market_overview.total_scored+' 只';
+  const top20=sc.top20;
+  new Chart(document.getElementById('scoreCh'),{
+    type:'bar',data:{
+      labels:top20.map(s=>s.name),
+      datasets:[{data:top20.map(s=>s.composite),
+        backgroundColor:top20.map(s=>s.composite>=60?'rgba(231,76,60,0.8)':s.composite>=20?'rgba(231,76,60,0.35)':s.composite>-20?'rgba(107,125,149,0.2)':s.composite>-60?'rgba(39,174,96,0.35)':'rgba(39,174,96,0.8)'),
+        borderRadius:5,barThickness:13,borderWidth:0}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{min:-100,max:100,grid:{color:'rgba(255,255,255,0.02)'},ticks:{font:{size:9}}},y:{grid:{display:false},ticks:{color:'#c8d6e5',font:{size:10,weight:'600'}}}}}
+  });
+
+  // 因子雷达
+  if(d.radar&&d.radar.length){
+    new Chart(document.getElementById('radarCh'),{
+      type:'radar',data:{
+        labels:['趋势','动量','量能','均值回归'],
+        datasets:d.radar.map(r=>({label:r.name,data:r.data,borderColor:r.color,backgroundColor:r.color.replace(')','.06)').replace('rgb','rgba'),borderWidth:2,pointRadius:3,pointBackgroundColor:r.color}))
+      },options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#8fa0b8',font:{size:9},padding:14,usePointStyle:true}}},
+        scales:{r:{min:-100,max:100,grid:{color:'rgba(255,255,255,0.03)'},angleLines:{color:'rgba(255,255,255,0.03)'},pointLabels:{color:'#8fa0b8',font:{size:9,weight:'600'}},ticks:{color:'#3d4f65',backdropColor:'transparent',font:{size:8}}}}}
+    });
+  }
+
+  // 板块热度
+  const sd=sc.sector_avg;
+  new Chart(document.getElementById('sectorCh'),{
+    type:'bar',data:{
+      labels:sd.map(s=>s.sector),
+      datasets:[{data:sd.map(s=>s.score),backgroundColor:sd.map(s=>s.color+'99'),borderRadius:4,barThickness:15,borderWidth:0}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{min:-100,max:100,grid:{color:'rgba(255,255,255,0.02)'},ticks:{font:{size:9}}},y:{grid:{display:false},ticks:{color:'#c8d6e5',font:{size:10,weight:'600'}}}}}
+  });
+
+  // 持仓
+  document.getElementById('holdTbl').innerHTML=holdTable(pf.holdings);
+  document.getElementById('holdLbl').textContent=pf.holding_count+' 只持仓';
+
+  // ============ 实时价格刷新 ============
+  if(pf.holdings&&pf.holdings.length>0){
+    const priceAPI='http://localhost:8766/api/prices';
+    const codes=pf.holdings.map(h=>h.code).join(',');
+    const liveBadge=document.getElementById('holdLbl');
+
+    // 启动定时轮询
+    let refreshTimer;
+    async function refreshPrices(){
+      try{
+        const r=await fetch(priceAPI+'?codes='+codes);
+        if(!r.ok) return;
+        const live=await r.json();
+        let changed=false;
+
+        pf.holdings.forEach(h=>{
+          const lp=live[h.code];
+          if(lp&&lp.price&&lp.price!==h.price){
+            h.price=lp.price;
+            h.value=h.shares*lp.price;
+            h.pnl=h.value-h.cost;
+            h.pnl_pct=(lp.price/h.buy_price-1)*100;
+            changed=true;
+          }
+        });
+
+        if(changed){
+          // 重新渲染持仓表
+          document.getElementById('holdTbl').innerHTML=holdTable(pf.holdings);
+          // 更新市值
+          const newMV=pf.holdings.reduce((s,h)=>s+h.value,0);
+          pf.market_value=newMV;
+          pf.total_value=pf.cash+newMV;
+          pf.total_return_pct=(pf.total_value/pf.init_cash-1)*100;
+
+          // 更新 KPI
+          document.getElementById('kpiVal').textContent='¥'+fmtN(pf.total_value);
+          document.getElementById('kpiRet').innerHTML=
+            (pf.total_return_pct>=0?'<span style="color:#f07070">'+fmtP(pf.total_return_pct)+'</span>':'<span style="color:#2ecc71">'+fmtP(pf.total_return_pct)+'</span>')+
+            ' <span style="color:#6b7d95">对比初始 ¥'+fmtN(pf.init_cash)+'</span>';
+          const deployed=pf.total_value>0?pf.market_value/pf.total_value*100:0;
+          document.getElementById('kpiDeploy').textContent='已部署 '+deployed.toFixed(0)+'% · 现金 '+((100-deployed).toFixed(0))+'%';
+
+          // 更新标签
+          const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+          liveBadge.textContent=pf.holding_count+' 只持仓 · 刷新 '+now;
+        }
+      }catch(e){
+        // 价格API不可用时静默降级
+      }
+    }
+
+    // 首次立即刷新，之后每10秒
+    refreshPrices();
+    refreshTimer=setInterval(refreshPrices,10000);
+
+    // 页面关闭时清理
+    window.addEventListener('beforeunload',()=>clearInterval(refreshTimer));
+  }
+
+  // 资金曲线
+  const snaps=pf.snapshots||[];
+  if(snaps.length>1){
+    const c=document.getElementById('navCh').getContext('2d');
+    const g=c.createLinearGradient(0,0,0,260);
+    g.addColorStop(0,'rgba(74,144,217,0.15)');g.addColorStop(1,'rgba(74,144,217,0)');
+    new Chart(c,{
+      type:'line',data:{
+        labels:snaps.map(s=>s.date?.slice(-5)||''),
+        datasets:[
+          {label:'账户资产',data:snaps.map(s=>s.total_value),borderColor:'#4a90d9',backgroundColor:g,fill:true,tension:.35,pointRadius:0,pointHoverRadius:5,borderWidth:2},
+          {label:'初始资金',data:snaps.map(()=>pf.init_cash),borderColor:'rgba(107,125,149,0.3)',borderDash:[5,5],pointRadius:0,borderWidth:1.5}
+        ]
+      },options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#8fa0b8',font:{size:9},usePointStyle:true,padding:18}}},
+        scales:{x:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{font:{size:9}}},y:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{font:{size:9},callback:v=>'¥'+(v/10000).toFixed(0)+'万'}}}}
+    });
+  }
+
+  // 交易记录
+  document.getElementById('tradeTbl').innerHTML=tradeTable(pf.trades);
+  document.getElementById('tradeLbl').textContent=pf.trade_count+' 笔交易';
+  document.getElementById('footT').textContent='生成时间：'+d.generated_at;
+
+  // 复盘
+  if(d.review){
+    const rv=d.review;
+    document.getElementById('reviewSlot').innerHTML=document.getElementById('t-review').innerHTML;
+    document.getElementById('revDt').textContent=rv.date;
+    document.getElementById('revN').textContent=rv.update_count;
+    const fw=rv.factor_weights||{};
+    document.getElementById('revW').innerHTML=['趋势','动量','量能','回归'].map((nm,i)=>{
+      const k=['trend','momentum','volume','mean_reversion'][i];
+      const w=(fw[k]||0.25)*100;const clr=F_COLORS[k]||'#4a90d9';
+      return '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-weight:600;color:#8fa0b8;width:64px;text-align:right">'+nm+'</span><div class="bar-wrap"><div class="bar-fill" style="width:'+w+'%;background:'+clr+'"></div></div><span class="mono" style="font-size:11px;font-weight:700;width:48px;text-align:right;color:'+clr+'">'+w.toFixed(1)+'%</span></div>';
+    }).join('');
+    const adjs=rv.adjustments||[];
+    if(adjs.length){
+      document.getElementById('revAdj').innerHTML=adjs.map(a=>{
+        const dir=a.change>0?'▲':'▼';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:4px 0"><span style="font-size:11px;font-weight:700;color:#fff;width:64px">'+(F_NAMES[a.factor]||a.factor)+'</span><span class="mono" style="font-size:11px;color:#f0a030;font-weight:600;width:120px">'+dir+' '+a.old_weight+' → '+a.new_weight+'</span><span style="font-size:11px;color:#6b7d95;flex:1">'+a.reason+'</span></div>';
+      }).join('');
+    }else{
+      document.getElementById('revAdj').innerHTML='<div style="font-size:12px;color:#6b7d95">本轮无参数调整</div>';
+    }
+    document.getElementById('revRpt').textContent=rv.report||'';
+  }
+
+  // 渐入动画
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.reveal').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('in'),i*45+40);
+    });
+  });
+
+  // 3D 因子宇宙
+  initUniverse(d.universe);
+
+  // 时钟
+  const tick=()=>{document.getElementById('clock').textContent=new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})};
+  tick();setInterval(tick,1000);
+}
+
+// ============ 3D 因子宇宙 ============
+async function initUniverse(u){
+  if(!u||!u.stocks||!u.stocks.length) return;
+  const THREE=await import('three');
+  const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
+
+  const wrap=document.querySelector('.univ');
+  const canvas=document.getElementById('univCanvas');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(wrap.clientWidth,wrap.clientHeight);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.15;
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(40,wrap.clientWidth/wrap.clientHeight,0.4,30);
+  camera.position.set(8,4.5,7);camera.lookAt(0,0,0);
+
+  scene.add(new THREE.AmbientLight(0x334466,1.8));
+  const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(3,8,5);scene.add(dl);
+  const bl=new THREE.DirectionalLight(0x5b8def,0.5);bl.position.set(-5,-2,-3);scene.add(bl);
+
+  // 星空
+  const sg=new THREE.BufferGeometry();
+  const sp=new Float32Array(400*3);
+  for(let i=0;i<400;i++){sp[i*3]=(Math.random()-.5)*18;sp[i*3+1]=(Math.random()-.5)*13;sp[i*3+2]=(Math.random()-.5)*13}
+  sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+  scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x8899bb,size:.016,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false})));
+
+  // 参考网格
+  const grid=new THREE.GridHelper(10,14,0x2a3040,0x1a2030);grid.position.y=-3.5;scene.add(grid);
+
+  // 板块光环
+  (u.rings||[]).forEach(r=>{
+    const rg=new THREE.TorusGeometry(r.radius,.016,14,42);
+    const rm=new THREE.MeshBasicMaterial({color:new THREE.Color(r.color),transparent:true,opacity:.18,depthWrite:false});
+    const mesh=new THREE.Mesh(rg,rm);mesh.position.set(r.cx,r.cy,r.cz);
+    mesh.rotation.x=Math.PI/2+(Math.random()-.5)*.4;mesh.rotation.y=(Math.random()-.5)*.4;
+    scene.add(mesh);
+  });
+
+  // 发光贴图
+  const gc=document.createElement('canvas');gc.width=128;gc.height=128;
+  const gctx=gc.getContext('2d');
+  const grd=gctx.createRadialGradient(64,64,0,64,64,64);
+  grd.addColorStop(0,'rgba(255,255,255,.7)');grd.addColorStop(.2,'rgba(255,255,255,.25)');
+  grd.addColorStop(.55,'rgba(255,255,255,.03)');grd.addColorStop(1,'rgba(255,255,255,0)');
+  gctx.fillStyle=grd;gctx.fillRect(0,0,128,128);
+  const glowTex=new THREE.CanvasTexture(gc);
+
+  // 因子星球
+  const stars=[];
+  u.stocks.forEach(st=>{
+    const color=new THREE.Color(st.color);
+    const geo=new THREE.SphereGeometry(st.radius,36,36);
+    const mat=new THREE.MeshStandardMaterial({color,roughness:.28,metalness:.18,emissive:color,emissiveIntensity:st.emissive});
+    const mesh=new THREE.Mesh(geo,mat);mesh.position.set(st.x,st.y,st.z);mesh.userData=st;
+    scene.add(mesh);stars.push(mesh);
+
+    const sm=new THREE.SpriteMaterial({map:glowTex,color,transparent:true,opacity:st.emissive*1.3,blending:THREE.AdditiveBlending,depthWrite:false});
+    const sprite=new THREE.Sprite(sm);sprite.scale.set(st.radius*5,st.radius*5,1);
+    mesh.add(sprite);
+  });
+
+  const controls=new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=.08;
+  controls.minDistance=3;controls.maxDistance=16;
+  controls.autoRotate=true;controls.autoRotateSpeed=.35;controls.update();
+
+  // 射线交互
+  const raycaster=new THREE.Raycaster();
+  const mouse=new THREE.Vector2();
+  const tip=document.getElementById('tip');
+  let hovered=null;
+
+  canvas.addEventListener('mousemove',e=>{
+    const rect=canvas.getBoundingClientRect();
+    mouse.x=((e.clientX-rect.left)/rect.width)*2-1;
+    mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse,camera);
+    const hits=raycaster.intersectObjects(stars);
+    if(hits.length>0){
+      const obj=hits[0].object;
+      if(hovered!==obj){if(hovered)hovered.material.emissiveIntensity=hovered.userData.emissive;hovered=obj;hovered.material.emissiveIntensity=.85}
+      const dt=obj.userData;
+      document.getElementById('tipN').textContent=dt.name;
+      document.getElementById('tipC').textContent=dt.code;
+      document.getElementById('tipSec').textContent=dt.sector;
+      const sg=document.getElementById('tipSig');
+      sg.textContent=dt.signal;sg.style.background=dt.composite>=20?'rgba(231,76,60,0.18)':dt.composite<=-20?'rgba(39,174,96,0.18)':'rgba(107,125,149,0.18)';
+      sg.style.color=dt.composite>=20?'#f07070':dt.composite<=-20?'#2ecc71':'#8fa0b8';
+      ['tipT','tipM','tipV','tipMR'].forEach((id,i)=>{const v=[dt.trend,dt.momentum,dt.volume,dt.mean_reversion][i];const el=document.getElementById(id);el.textContent=v.toFixed(0);el.style.color=v>=0?'#f07070':'#2ecc71'});
+      const ce=document.getElementById('tipCmp');ce.textContent=dt.composite.toFixed(0);ce.style.color=dt.composite>=0?'#f07070':'#2ecc71';
+      tip.classList.add('active');tip.style.left=(e.clientX+18)+'px';tip.style.top=(e.clientY-140)+'px';
+    }else{if(hovered){hovered.material.emissiveIntensity=hovered.userData.emissive;hovered=null}tip.classList.remove('active')}
+  });
+  canvas.addEventListener('mouseleave',()=>{if(hovered){hovered.material.emissiveIntensity=hovered.userData.emissive;hovered=null}tip.classList.remove('active')});
+
+  (function a(){requestAnimationFrame(a);controls.update();renderer.render(scene,camera)})();
+
+  window.addEventListener('resize',()=>{const w=wrap.clientWidth,h=wrap.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)});
+
+  // 图例
+  const used=[...new Set(u.stocks.map(s=>s.sector))];
+  document.getElementById('univLeg').innerHTML=used.map(sec=>{const s=u.stocks.find(x=>x.sector===sec);return '<span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:'+s.sectorColor+'"></span>'+sec+'</span>'}).join('');
+}
+
+main();
+</script>
+</body>
+</html>

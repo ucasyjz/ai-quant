@@ -1,0 +1,1767 @@
+[
+  {
+    "date": "2026-07-06",
+    "report": "=== AI复盘报告 2026-07-06 ===\n\n【信号准确度】暂无历史数据可比，明天开始有完整复盘\n\n【因子归因】\n  趋势: 贡献度+0.00 命中率0% (-)\n  动量: 贡献度+0.00 命中率0% (-)\n  量能: 贡献度+0.00 命中率0% (-)\n  均值回归: 贡献度+0.00 命中率0% (-)\n  表现最好的: 趋势\n  表现最差的: 趋势\n\n【仓位配置】\n  总资产: ¥1,043,846\n  持仓4只, 现金8.2%, 最大单只26.2%\n  板块分布: 深市主板44.2%, 沪市主板24.5%, 科创板23.1%\n\n【风险控制】\n  最大单只亏损: -0.8% (688336)\n  组合最大回撤: 0.0%\n\n【交易效率】\n  最近4笔交易, 估算手续费¥228.0\n\n【AI自我调整】本轮不调整，参数维持不变\n\n【明日策略】\n  参数无需调整，维持当前策略继续执行",
+    "result": {
+      "date": "2026-07-06",
+      "signal_accuracy": {
+        "buy_signals": 0,
+        "buy_hits": 0,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "buy_accuracy": null,
+        "sell_accuracy": null,
+        "details": [],
+        "neutral": 149
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": 0,
+          "hit_rate": 0,
+          "samples": 0
+        },
+        "momentum": {
+          "avg_contribution": 0,
+          "hit_rate": 0,
+          "samples": 0
+        },
+        "volume": {
+          "avg_contribution": 0,
+          "hit_rate": 0,
+          "samples": 0
+        },
+        "mean_reversion": {
+          "avg_contribution": 0,
+          "hit_rate": 0,
+          "samples": 0
+        }
+      },
+      "position": {
+        "cash_ratio": 8.2,
+        "max_single_pct": 26.2,
+        "n_positions": 4,
+        "concentration_hhi": 2144.0,
+        "sector_distribution": {
+          "深市主板": 44.2,
+          "沪市主板": 24.5,
+          "科创板": 23.1
+        },
+        "total_value": 1043846.0
+      },
+      "risk": {
+        "max_single_loss": -0.8,
+        "max_loss_stock": "688336",
+        "max_drawdown": 0,
+        "position_pnls": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "pnl": 6.6
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 10.0
+          },
+          {
+            "code": "600276",
+            "name": "恒瑞医药",
+            "pnl": 4.4
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "pnl": -0.8
+          }
+        ],
+        "need_stop_loss": "False"
+      },
+      "missed": {
+        "missed_buys": [],
+        "missed_sells": [],
+        "real_regrets": 0
+      },
+      "sectors": {},
+      "efficiency": {
+        "recent_trades": 4,
+        "estimated_cost": 228.0,
+        "avg_holding_days": null,
+        "total_trades": 4,
+        "trading_days": 1
+      },
+      "adjustments": []
+    }
+  },
+  {
+    "date": "2026-07-06",
+    "report": "=== AI复盘报告 2026-07-06 ===\n\n【信号准确度】\n  昨天发出50个买入信号，0个命中(今天涨了)，命中率0.0%\n  打脸的信号:\n    德明利: 预测买入但实际跌0.0%\n    星帅尔: 预测买入但实际跌0.0%\n    恒瑞医药: 预测买入但实际跌0.0%\n\n【因子归因】\n  趋势: 贡献度+0.00 命中率0% (-)\n  动量: 贡献度+0.00 命中率0% (-)\n  量能: 贡献度+0.00 命中率0% (-)\n  均值回归: 贡献度+0.00 命中率0% (-)\n  表现最好的: 趋势\n  表现最差的: 趋势\n\n【仓位配置】\n  总资产: ¥1,046,942\n  持仓5只, 现金1.6%, 最大单只26.2%\n  板块分布: 深市主板50.9%, 沪市主板24.4%, 科创板23.1%\n\n【风险控制】\n  最大单只亏损: -0.8% (688336)\n  组合最大回撤: 0.0%\n\n【板块表现】\n  最强: 深市主板+0.0%, 沪市主板+0.0%\n  最弱: 沪市主板0.0%, 科创板0.0%\n\n【交易效率】\n  最近5笔交易, 估算手续费¥245.0\n\n【AI自我调整】\n  buy_threshold: 20→22 (买入命中率仅0%，提高门槛)\n\n【明日策略】\n  基于今日复盘微调了参数，明天用新参数扫描",
+    "result": {
+      "date": "2026-07-06",
+      "signal_accuracy": {
+        "buy_signals": 50,
+        "buy_hits": 0,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "neutral": 99,
+        "details": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "signal": "买入",
+            "score": 32.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "signal": "买入",
+            "score": 32.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600276",
+            "name": "恒瑞医药",
+            "signal": "买入",
+            "score": 32.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "signal": "买入",
+            "score": 31.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002440",
+            "name": "闰土股份",
+            "signal": "买入",
+            "score": 31.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603087",
+            "name": "甘李药业",
+            "signal": "买入",
+            "score": 31.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000938",
+            "name": "紫光股份",
+            "signal": "买入",
+            "score": 30.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688629",
+            "name": "华丰科技",
+            "signal": "买入",
+            "score": 30.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688578",
+            "name": "艾力斯",
+            "signal": "买入",
+            "score": 30.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688002",
+            "name": "睿创微纳",
+            "signal": "买入",
+            "score": 30.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603928",
+            "name": "兴业股份",
+            "signal": "买入",
+            "score": 30.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002452",
+            "name": "长高电气",
+            "signal": "买入",
+            "score": 30.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002468",
+            "name": "申通快递",
+            "signal": "买入",
+            "score": 30.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688796",
+            "name": "百奥赛图",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688331",
+            "name": "荣昌生物",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688117",
+            "name": "圣诺生物",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688235",
+            "name": "百济神州",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688266",
+            "name": "泽璟制药-U",
+            "signal": "买入",
+            "score": 30.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603379",
+            "name": "三美股份",
+            "signal": "买入",
+            "score": 30.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "605305",
+            "name": "中际联合",
+            "signal": "买入",
+            "score": 29.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002653",
+            "name": "海思科",
+            "signal": "买入",
+            "score": 29.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002768",
+            "name": "国恩股份",
+            "signal": "买入",
+            "score": 28.8,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002415",
+            "name": "海康威视",
+            "signal": "买入",
+            "score": 28.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600601",
+            "name": "方正科技",
+            "signal": "买入",
+            "score": 28.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002020",
+            "name": "京新药业",
+            "signal": "买入",
+            "score": 28.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002517",
+            "name": "恺英网络",
+            "signal": "买入",
+            "score": 28.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002192",
+            "name": "融捷股份",
+            "signal": "买入",
+            "score": 27.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "605060",
+            "name": "XD联德股",
+            "signal": "买入",
+            "score": 27.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002558",
+            "name": "巨人网络",
+            "signal": "买入",
+            "score": 27.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603638",
+            "name": "艾迪精密",
+            "signal": "买入",
+            "score": 27.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "601628",
+            "name": "中国人寿",
+            "signal": "买入",
+            "score": 27.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002850",
+            "name": "科达利",
+            "signal": "买入",
+            "score": 27.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002293",
+            "name": "罗莱生活",
+            "signal": "买入",
+            "score": 27.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603444",
+            "name": "吉比特",
+            "signal": "买入",
+            "score": 26.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002901",
+            "name": "大博医疗",
+            "signal": "买入",
+            "score": 26.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688213",
+            "name": "思特威-W",
+            "signal": "买入",
+            "score": 25.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600885",
+            "name": "宏发股份",
+            "signal": "买入",
+            "score": 25.8,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603268",
+            "name": "松发股份",
+            "signal": "买入",
+            "score": 25.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002250",
+            "name": "联化科技",
+            "signal": "买入",
+            "score": 23.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000623",
+            "name": "吉林敖东",
+            "signal": "买入",
+            "score": 23.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002353",
+            "name": "杰瑞股份",
+            "signal": "买入",
+            "score": 23.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688278",
+            "name": "特宝生物",
+            "signal": "买入",
+            "score": 23.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600298",
+            "name": "安琪酵母",
+            "signal": "买入",
+            "score": 22.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600196",
+            "name": "复星医药",
+            "signal": "买入",
+            "score": 22.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002266",
+            "name": "浙富控股",
+            "signal": "买入",
+            "score": 21.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000987",
+            "name": "越秀资本",
+            "signal": "买入",
+            "score": 20.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688309",
+            "name": "恒誉环保",
+            "signal": "买入",
+            "score": 20.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600182",
+            "name": "S佳通",
+            "signal": "买入",
+            "score": 20.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600288",
+            "name": "大恒科技",
+            "signal": "买入",
+            "score": 20.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000963",
+            "name": "华东医药",
+            "signal": "买入",
+            "score": 20.0,
+            "change": 0.0,
+            "hit": "False"
+          }
+        ],
+        "buy_accuracy": 0.0,
+        "sell_accuracy": null
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 149
+        },
+        "momentum": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 149
+        },
+        "volume": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 149
+        },
+        "mean_reversion": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 149
+        }
+      },
+      "position": {
+        "cash_ratio": 1.6,
+        "max_single_pct": 26.2,
+        "n_positions": 5,
+        "concentration_hhi": 2178.0,
+        "sector_distribution": {
+          "深市主板": 50.9,
+          "沪市主板": 24.4,
+          "科创板": 23.1
+        },
+        "total_value": 1046942.0
+      },
+      "risk": {
+        "max_single_loss": -0.8,
+        "max_loss_stock": "688336",
+        "max_drawdown": 0,
+        "position_pnls": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "pnl": 6.6
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 10.0
+          },
+          {
+            "code": "600276",
+            "name": "恒瑞医药",
+            "pnl": 4.4
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "pnl": -0.8
+          },
+          {
+            "code": "002440",
+            "name": "闰土股份",
+            "pnl": 4.6
+          }
+        ],
+        "need_stop_loss": "False"
+      },
+      "missed": {
+        "missed_buys": [
+          {
+            "code": "603087",
+            "name": "甘李药业",
+            "score": 31.1,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000938",
+            "name": "紫光股份",
+            "score": 30.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688629",
+            "name": "华丰科技",
+            "score": 30.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688578",
+            "name": "艾力斯",
+            "score": 30.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688002",
+            "name": "睿创微纳",
+            "score": 30.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603928",
+            "name": "兴业股份",
+            "score": 30.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002452",
+            "name": "长高电气",
+            "score": 30.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002468",
+            "name": "申通快递",
+            "score": 30.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688796",
+            "name": "百奥赛图",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688331",
+            "name": "荣昌生物",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688117",
+            "name": "圣诺生物",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688235",
+            "name": "百济神州",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688266",
+            "name": "泽璟制药-U",
+            "score": 30.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603379",
+            "name": "三美股份",
+            "score": 30.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "605305",
+            "name": "中际联合",
+            "score": 29.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002653",
+            "name": "海思科",
+            "score": 29.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002768",
+            "name": "国恩股份",
+            "score": 28.8,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002415",
+            "name": "海康威视",
+            "score": 28.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600601",
+            "name": "方正科技",
+            "score": 28.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002020",
+            "name": "京新药业",
+            "score": 28.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002517",
+            "name": "恺英网络",
+            "score": 28.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002192",
+            "name": "融捷股份",
+            "score": 27.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "605060",
+            "name": "XD联德股",
+            "score": 27.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002558",
+            "name": "巨人网络",
+            "score": 27.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603638",
+            "name": "艾迪精密",
+            "score": 27.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "601628",
+            "name": "中国人寿",
+            "score": 27.1,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002850",
+            "name": "科达利",
+            "score": 27.1,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002293",
+            "name": "罗莱生活",
+            "score": 27.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603444",
+            "name": "吉比特",
+            "score": 26.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002901",
+            "name": "大博医疗",
+            "score": 26.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688213",
+            "name": "思特威-W",
+            "score": 25.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600885",
+            "name": "宏发股份",
+            "score": 25.8,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603268",
+            "name": "松发股份",
+            "score": 25.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002250",
+            "name": "联化科技",
+            "score": 23.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000623",
+            "name": "吉林敖东",
+            "score": 23.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002353",
+            "name": "杰瑞股份",
+            "score": 23.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688278",
+            "name": "特宝生物",
+            "score": 23.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600298",
+            "name": "安琪酵母",
+            "score": 22.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600196",
+            "name": "复星医药",
+            "score": 22.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002266",
+            "name": "浙富控股",
+            "score": 21.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000987",
+            "name": "越秀资本",
+            "score": 20.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688309",
+            "name": "恒誉环保",
+            "score": 20.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600182",
+            "name": "S佳通",
+            "score": 20.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600288",
+            "name": "大恒科技",
+            "score": 20.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000963",
+            "name": "华东医药",
+            "score": 20.0,
+            "change": 0.0,
+            "regret": "False"
+          }
+        ],
+        "missed_sells": [],
+        "real_regrets": 0
+      },
+      "sectors": {
+        "深市主板": {
+          "avg_change": 0.0,
+          "n_stocks": 71
+        },
+        "沪市主板": {
+          "avg_change": 0.0,
+          "n_stocks": 62
+        },
+        "科创板": {
+          "avg_change": 0.0,
+          "n_stocks": 16
+        }
+      },
+      "efficiency": {
+        "recent_trades": 5,
+        "estimated_cost": 245.0,
+        "avg_holding_days": null,
+        "total_trades": 5,
+        "trading_days": 2
+      },
+      "adjustments": [
+        {
+          "factor": "buy_threshold",
+          "old_weight": 20,
+          "new_weight": 22,
+          "change": 2,
+          "reason": "买入命中率仅0%，提高门槛"
+        }
+      ]
+    }
+  },
+  {
+    "date": "2026-07-06",
+    "report": "=== AI复盘报告 2026-07-06 ===\n\n【信号准确度】\n  昨天发出50个买入信号，0个命中(今天涨了)，命中率0.0%\n  打脸的信号:\n    德明利: 预测买入但实际跌0.0%\n    星帅尔: 预测买入但实际跌0.0%\n    恒瑞医药: 预测买入但实际跌0.0%\n\n【因子归因】\n  趋势: 贡献度+0.00 命中率0% (-)\n  动量: 贡献度+0.00 命中率0% (-)\n  量能: 贡献度+0.00 命中率0% (-)\n  均值回归: 贡献度+0.00 命中率0% (-)\n  表现最好的: 趋势\n  表现最差的: 趋势\n\n【仓位配置】\n  总资产: ¥1,046,942\n  持仓5只, 现金1.6%, 最大单只26.2%\n  板块分布: 深市主板50.9%, 沪市主板24.4%, 科创板23.1%\n\n【风险控制】\n  最大单只亏损: -0.8% (688336)\n  组合最大回撤: 0.0%\n\n【板块表现】\n  最强: 深市主板+0.0%, 沪市主板+0.0%\n  最弱: 沪市主板0.0%, 科创板0.0%\n\n【交易效率】\n  最近5笔交易, 估算手续费¥245.0\n\n【AI自我调整】\n  buy_threshold: 22→24 (买入命中率仅0%，提高门槛)\n\n【明日策略】\n  基于今日复盘微调了参数，明天用新参数扫描",
+    "result": {
+      "date": "2026-07-06",
+      "signal_accuracy": {
+        "buy_signals": 50,
+        "buy_hits": 0,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "neutral": 100,
+        "details": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "signal": "买入",
+            "score": 32.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "signal": "买入",
+            "score": 32.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600276",
+            "name": "恒瑞医药",
+            "signal": "买入",
+            "score": 32.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "signal": "买入",
+            "score": 31.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002440",
+            "name": "闰土股份",
+            "signal": "买入",
+            "score": 31.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603087",
+            "name": "甘李药业",
+            "signal": "买入",
+            "score": 31.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000938",
+            "name": "紫光股份",
+            "signal": "买入",
+            "score": 30.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688629",
+            "name": "华丰科技",
+            "signal": "买入",
+            "score": 30.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688578",
+            "name": "艾力斯",
+            "signal": "买入",
+            "score": 30.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688002",
+            "name": "睿创微纳",
+            "signal": "买入",
+            "score": 30.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603928",
+            "name": "兴业股份",
+            "signal": "买入",
+            "score": 30.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002452",
+            "name": "长高电气",
+            "signal": "买入",
+            "score": 30.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002468",
+            "name": "申通快递",
+            "signal": "买入",
+            "score": 30.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688796",
+            "name": "百奥赛图",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688331",
+            "name": "荣昌生物",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688117",
+            "name": "圣诺生物",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688235",
+            "name": "百济神州",
+            "signal": "买入",
+            "score": 30.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688266",
+            "name": "泽璟制药-U",
+            "signal": "买入",
+            "score": 30.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603379",
+            "name": "三美股份",
+            "signal": "买入",
+            "score": 30.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "605305",
+            "name": "中际联合",
+            "signal": "买入",
+            "score": 29.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002653",
+            "name": "海思科",
+            "signal": "买入",
+            "score": 29.3,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002768",
+            "name": "国恩股份",
+            "signal": "买入",
+            "score": 28.8,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002415",
+            "name": "海康威视",
+            "signal": "买入",
+            "score": 28.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600601",
+            "name": "方正科技",
+            "signal": "买入",
+            "score": 28.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002020",
+            "name": "京新药业",
+            "signal": "买入",
+            "score": 28.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002517",
+            "name": "恺英网络",
+            "signal": "买入",
+            "score": 28.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002192",
+            "name": "融捷股份",
+            "signal": "买入",
+            "score": 27.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "605060",
+            "name": "XD联德股",
+            "signal": "买入",
+            "score": 27.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002558",
+            "name": "巨人网络",
+            "signal": "买入",
+            "score": 27.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603638",
+            "name": "艾迪精密",
+            "signal": "买入",
+            "score": 27.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "601628",
+            "name": "中国人寿",
+            "signal": "买入",
+            "score": 27.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002850",
+            "name": "科达利",
+            "signal": "买入",
+            "score": 27.1,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002293",
+            "name": "罗莱生活",
+            "signal": "买入",
+            "score": 27.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603444",
+            "name": "吉比特",
+            "signal": "买入",
+            "score": 26.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002901",
+            "name": "大博医疗",
+            "signal": "买入",
+            "score": 26.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688213",
+            "name": "思特威-W",
+            "signal": "买入",
+            "score": 25.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600885",
+            "name": "宏发股份",
+            "signal": "买入",
+            "score": 25.8,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "603268",
+            "name": "松发股份",
+            "signal": "买入",
+            "score": 25.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002250",
+            "name": "联化科技",
+            "signal": "买入",
+            "score": 23.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000623",
+            "name": "吉林敖东",
+            "signal": "买入",
+            "score": 23.4,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002353",
+            "name": "杰瑞股份",
+            "signal": "买入",
+            "score": 23.2,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688278",
+            "name": "特宝生物",
+            "signal": "买入",
+            "score": 23.0,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600298",
+            "name": "安琪酵母",
+            "signal": "买入",
+            "score": 22.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600196",
+            "name": "复星医药",
+            "signal": "买入",
+            "score": 22.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "002266",
+            "name": "浙富控股",
+            "signal": "买入",
+            "score": 21.9,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000987",
+            "name": "越秀资本",
+            "signal": "买入",
+            "score": 20.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "688309",
+            "name": "恒誉环保",
+            "signal": "买入",
+            "score": 20.7,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600182",
+            "name": "S佳通",
+            "signal": "买入",
+            "score": 20.6,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "600288",
+            "name": "大恒科技",
+            "signal": "买入",
+            "score": 20.5,
+            "change": 0.0,
+            "hit": "False"
+          },
+          {
+            "code": "000963",
+            "name": "华东医药",
+            "signal": "买入",
+            "score": 20.0,
+            "change": 0.0,
+            "hit": "False"
+          }
+        ],
+        "buy_accuracy": 0.0,
+        "sell_accuracy": null
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 150
+        },
+        "momentum": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 150
+        },
+        "volume": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 150
+        },
+        "mean_reversion": {
+          "avg_contribution": 0.0,
+          "hit_rate": 0.0,
+          "samples": 150
+        }
+      },
+      "position": {
+        "cash_ratio": 1.6,
+        "max_single_pct": 26.2,
+        "n_positions": 5,
+        "concentration_hhi": 2178.0,
+        "sector_distribution": {
+          "深市主板": 50.9,
+          "沪市主板": 24.4,
+          "科创板": 23.1
+        },
+        "total_value": 1046942.0
+      },
+      "risk": {
+        "max_single_loss": -0.8,
+        "max_loss_stock": "688336",
+        "max_drawdown": 0,
+        "position_pnls": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "pnl": 6.6
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 10.0
+          },
+          {
+            "code": "600276",
+            "name": "恒瑞医药",
+            "pnl": 4.4
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "pnl": -0.8
+          },
+          {
+            "code": "002440",
+            "name": "闰土股份",
+            "pnl": 4.6
+          }
+        ],
+        "need_stop_loss": "False"
+      },
+      "missed": {
+        "missed_buys": [
+          {
+            "code": "603087",
+            "name": "甘李药业",
+            "score": 31.1,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000938",
+            "name": "紫光股份",
+            "score": 30.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688629",
+            "name": "华丰科技",
+            "score": 30.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688578",
+            "name": "艾力斯",
+            "score": 30.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688002",
+            "name": "睿创微纳",
+            "score": 30.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603928",
+            "name": "兴业股份",
+            "score": 30.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002452",
+            "name": "长高电气",
+            "score": 30.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002468",
+            "name": "申通快递",
+            "score": 30.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688796",
+            "name": "百奥赛图",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688331",
+            "name": "荣昌生物",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688117",
+            "name": "圣诺生物",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688235",
+            "name": "百济神州",
+            "score": 30.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688266",
+            "name": "泽璟制药-U",
+            "score": 30.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603379",
+            "name": "三美股份",
+            "score": 30.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "605305",
+            "name": "中际联合",
+            "score": 29.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002653",
+            "name": "海思科",
+            "score": 29.3,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002768",
+            "name": "国恩股份",
+            "score": 28.8,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002415",
+            "name": "海康威视",
+            "score": 28.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600601",
+            "name": "方正科技",
+            "score": 28.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002020",
+            "name": "京新药业",
+            "score": 28.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002517",
+            "name": "恺英网络",
+            "score": 28.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002192",
+            "name": "融捷股份",
+            "score": 27.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "605060",
+            "name": "XD联德股",
+            "score": 27.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002558",
+            "name": "巨人网络",
+            "score": 27.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603638",
+            "name": "艾迪精密",
+            "score": 27.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "601628",
+            "name": "中国人寿",
+            "score": 27.1,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002850",
+            "name": "科达利",
+            "score": 27.1,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002293",
+            "name": "罗莱生活",
+            "score": 27.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603444",
+            "name": "吉比特",
+            "score": 26.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002901",
+            "name": "大博医疗",
+            "score": 26.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688213",
+            "name": "思特威-W",
+            "score": 25.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600885",
+            "name": "宏发股份",
+            "score": 25.8,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "603268",
+            "name": "松发股份",
+            "score": 25.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002250",
+            "name": "联化科技",
+            "score": 23.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000623",
+            "name": "吉林敖东",
+            "score": 23.4,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002353",
+            "name": "杰瑞股份",
+            "score": 23.2,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688278",
+            "name": "特宝生物",
+            "score": 23.0,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600298",
+            "name": "安琪酵母",
+            "score": 22.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600196",
+            "name": "复星医药",
+            "score": 22.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "002266",
+            "name": "浙富控股",
+            "score": 21.9,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000987",
+            "name": "越秀资本",
+            "score": 20.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "688309",
+            "name": "恒誉环保",
+            "score": 20.7,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600182",
+            "name": "S佳通",
+            "score": 20.6,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "600288",
+            "name": "大恒科技",
+            "score": 20.5,
+            "change": 0.0,
+            "regret": "False"
+          },
+          {
+            "code": "000963",
+            "name": "华东医药",
+            "score": 20.0,
+            "change": 0.0,
+            "regret": "False"
+          }
+        ],
+        "missed_sells": [],
+        "real_regrets": 0
+      },
+      "sectors": {
+        "深市主板": {
+          "avg_change": 0.0,
+          "n_stocks": 72
+        },
+        "沪市主板": {
+          "avg_change": 0.0,
+          "n_stocks": 62
+        },
+        "科创板": {
+          "avg_change": 0.0,
+          "n_stocks": 16
+        }
+      },
+      "efficiency": {
+        "recent_trades": 5,
+        "estimated_cost": 245.0,
+        "avg_holding_days": null,
+        "total_trades": 5,
+        "trading_days": 4
+      },
+      "adjustments": [
+        {
+          "factor": "buy_threshold",
+          "old_weight": 22,
+          "new_weight": 24,
+          "change": 2,
+          "reason": "买入命中率仅0%，提高门槛"
+        }
+      ]
+    }
+  }
+]

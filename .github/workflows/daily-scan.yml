@@ -1,0 +1,83 @@
+name: A股AI选股每日扫描
+
+on:
+  # 定时触发：每个交易日北京时间 15:35 运行（UTC 07:35，留5分钟等收盘数据）
+  schedule:
+    - cron: '35 7 * * 1-5'
+  # 手动触发
+  workflow_dispatch:
+
+permissions:
+  contents: write   # 需要写权限来提交结果
+  pages: write      # 部署仪表盘到 GitHub Pages
+  id-token: write
+
+jobs:
+  daily-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run AI Stock Scanner
+        env:
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: '1'
+          TZ: Asia/Shanghai
+        run: |
+          python generate_daily.py --force
+
+      - name: Commit results
+        run: |
+          git config user.name "AI Quant Bot"
+          git config user.email "bot@quant.ai"
+          git add portfolio.json strategy_params.json signal_history.json review_log.json daily_result.json data.json dashboard.html 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Daily scan: $(date -u -d '+8 hours' +%Y-%m-%d)"
+          git push
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard
+          path: |
+            dashboard.html
+            data.json
+            portfolio.json
+          retention-days: 90
+
+  deploy-pages:
+    needs: daily-scan
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

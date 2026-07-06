@@ -1,0 +1,145 @@
+{
+  "cash": 17262.099399999977,
+  "holdings": {
+    "001309": {
+      "name": "德明利",
+      "shares": 200,
+      "buy_price": 877.1,
+      "cost": 175648.05,
+      "buy_date": "2026-07-06"
+    },
+    "002860": {
+      "name": "星帅尔",
+      "shares": 15600,
+      "buy_price": 15.97,
+      "cost": 249455.87,
+      "buy_date": "2026-07-06"
+    },
+    "600276": {
+      "name": "恒瑞医药",
+      "shares": 4500,
+      "buy_price": 54.4,
+      "cost": 245118.24,
+      "buy_date": "2026-07-06"
+    },
+    "688336": {
+      "name": "三生国健",
+      "shares": 4200,
+      "buy_price": 58.0,
+      "cost": 243916.68,
+      "buy_date": "2026-07-06"
+    },
+    "002440": {
+      "name": "闰土股份",
+      "shares": 6500,
+      "buy_price": 10.54,
+      "cost": 68599.06,
+      "buy_date": "2026-07-06"
+    }
+  },
+  "trades": [
+    {
+      "date": "2026-07-06",
+      "code": "001309",
+      "name": "德明利",
+      "action": "买入",
+      "shares": 200,
+      "price": 877.1,
+      "amount": 175420.0,
+      "net_amount": 175648.05,
+      "cost": 175648.05,
+      "fees": 228.05,
+      "pnl": 0,
+      "pnl_pct": 0,
+      "reason": "AI评分33，买入，信心56%"
+    },
+    {
+      "date": "2026-07-06",
+      "code": "002860",
+      "name": "星帅尔",
+      "action": "买入",
+      "shares": 15600,
+      "price": 15.97,
+      "amount": 249132.0,
+      "net_amount": 249455.87,
+      "cost": 249455.87,
+      "fees": 323.87,
+      "pnl": 0,
+      "pnl_pct": 0,
+      "reason": "AI评分32，买入，信心56%"
+    },
+    {
+      "date": "2026-07-06",
+      "code": "600276",
+      "name": "恒瑞医药",
+      "action": "买入",
+      "shares": 4500,
+      "price": 54.4,
+      "amount": 244800.0,
+      "net_amount": 245118.24,
+      "cost": 245118.24,
+      "fees": 318.24,
+      "pnl": 0,
+      "pnl_pct": 0,
+      "reason": "AI评分32，买入，信心56%"
+    },
+    {
+      "date": "2026-07-06",
+      "code": "688336",
+      "name": "三生国健",
+      "action": "买入",
+      "shares": 4200,
+      "price": 58.0,
+      "amount": 243600.0,
+      "net_amount": 243916.68,
+      "cost": 243916.68,
+      "fees": 316.68,
+      "pnl": 0,
+      "pnl_pct": 0,
+      "reason": "AI评分31，买入，信心56%"
+    },
+    {
+      "date": "2026-07-06",
+      "code": "002440",
+      "name": "闰土股份",
+      "action": "买入",
+      "shares": 6500,
+      "price": 10.54,
+      "amount": 68510.0,
+      "net_amount": 68599.06,
+      "cost": 68599.06,
+      "fees": 89.06,
+      "pnl": 0,
+      "pnl_pct": 0,
+      "reason": "AI评分31，买入，信心56%"
+    }
+  ],
+  "created_at": "2026-07-06 22:59",
+  "last_update": "2026-07-06 23:07",
+  "daily_snapshots": [
+    {
+      "date": "2026-07-06",
+      "cash": 85861.16,
+      "total_value": 1043846.16,
+      "n_holdings": 4
+    },
+    {
+      "date": "2026-07-06",
+      "cash": 17262.1,
+      "total_value": 1046942.1,
+      "n_holdings": 5
+    },
+    {
+      "date": "2026-07-06",
+      "cash": 17262.1,
+      "total_value": 1046942.1,
+      "n_holdings": 5
+    },
+    {
+      "date": "2026-07-06",
+      "cash": 17262.1,
+      "total_value": 1046942.1,
+      "n_holdings": 5
+    }
+  ]
+}
