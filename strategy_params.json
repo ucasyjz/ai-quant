@@ -1,11 +1,11 @@
 {
   "factor_weights": {
-    "trend": 0.3,
-    "momentum": 0.3,
-    "volume": 0.2,
-    "mean_reversion": 0.2
+    "trend": 0.3182,
+    "momentum": 0.3182,
+    "volume": 0.2273,
+    "mean_reversion": 0.1364
   },
-  "buy_threshold": 26,
+  "buy_threshold": 28,
   "factor_performance_history": [
     {
       "date": "2026-07-06",
@@ -81,8 +81,33 @@
           "samples": 150
         }
       }
+    },
+    {
+      "date": "2026-07-08",
+      "attribution": {
+        "trend": {
+          "avg_contribution": 29.42,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "momentum": {
+          "avg_contribution": 30.8,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "volume": {
+          "avg_contribution": 34.46,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "mean_reversion": {
+          "avg_contribution": -30.57,
+          "hit_rate": 66.7,
+          "samples": 33
+        }
+      }
     }
   ],
-  "updated_at": "2026-07-07",
-  "update_count": 3
+  "updated_at": "2026-07-08",
+  "update_count": 4
 }

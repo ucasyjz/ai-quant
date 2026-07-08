@@ -2605,5 +2605,236 @@
         }
       ]
     }
+  },
+  {
+    "date": "2026-07-08",
+    "report": "=== AI复盘报告 2026-07-08 ===\n\n【信号准确度】\n  昨天发出2个买入信号，0个命中(今天涨了)，命中率0.0%\n  打脸的信号:\n    工商银行: 预测买入但实际跌0.7%\n    新希望: 预测买入但实际跌68.4%\n\n【因子归因】\n  趋势: 贡献度+29.42 命中率36% (+)\n  动量: 贡献度+30.80 命中率36% (+)\n  量能: 贡献度+34.46 命中率36% (+)\n  均值回归: 贡献度-30.57 命中率67% (-)\n  表现最好的: 量能\n  表现最差的: 均值回归\n\n【仓位配置】\n  总资产: ¥972,739\n  持仓5只, 现金22.9%, 最大单只25.6%\n  板块分布: 未知75.7%, 银行1.3%\n\n【风险控制】\n  最大单只亏损: -0.2% (601398)\n  组合最大回撤: -7.1%\n\n【板块表现】\n  最强: 金融+315.2%, 家电+234.7%\n  最弱: 周期-31.0%, 农业-68.4%\n\n【交易效率】\n  最近7笔交易, 估算手续费¥523.0\n  平均持仓1.0天\n\n【AI自我调整】\n  趋势: 0.3→0.35 (贡献度+29.42, 命中率36%)\n  动量: 0.3→0.35 (贡献度+30.80, 命中率36%)\n  量能: 0.2→0.25 (贡献度+34.46, 命中率36%)\n  均值回归: 0.2→0.15 (贡献度-30.57, 命中率67%)\n  buy_threshold: 26→28 (买入命中率仅0%，提高门槛)\n\n【明日策略】\n  基于今日复盘微调了参数，明天用新参数扫描",
+    "result": {
+      "date": "2026-07-08",
+      "signal_accuracy": {
+        "buy_signals": 2,
+        "buy_hits": 0,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "neutral": 31,
+        "details": [
+          {
+            "code": "601398",
+            "name": "工商银行",
+            "signal": "买入",
+            "score": 27.5,
+            "change": -0.7,
+            "hit": "False"
+          },
+          {
+            "code": "000876",
+            "name": "新希望",
+            "signal": "买入",
+            "score": 22.4,
+            "change": -68.43,
+            "hit": "False"
+          }
+        ],
+        "buy_accuracy": 0.0,
+        "sell_accuracy": null
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": 29.42,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "momentum": {
+          "avg_contribution": 30.8,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "volume": {
+          "avg_contribution": 34.46,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "mean_reversion": {
+          "avg_contribution": -30.57,
+          "hit_rate": 66.7,
+          "samples": 33
+        }
+      },
+      "position": {
+        "cash_ratio": 22.9,
+        "max_single_pct": 25.6,
+        "n_positions": 5,
+        "concentration_hhi": 1660.0,
+        "sector_distribution": {
+          "未知": 75.7,
+          "银行": 1.3
+        },
+        "total_value": 972739.0
+      },
+      "risk": {
+        "max_single_loss": -0.2,
+        "max_loss_stock": "601398",
+        "max_drawdown": -7.1,
+        "position_pnls": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "pnl": 0.0
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 0.0
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "pnl": 0.0
+          },
+          {
+            "code": "002440",
+            "name": "闰土股份",
+            "pnl": 0.0
+          },
+          {
+            "code": "601398",
+            "name": "工商银行",
+            "pnl": -0.2
+          }
+        ],
+        "need_stop_loss": "False"
+      },
+      "missed": {
+        "missed_buys": [
+          {
+            "code": "000876",
+            "name": "新希望",
+            "score": 22.4,
+            "change": -68.43,
+            "regret": "False"
+          }
+        ],
+        "missed_sells": [],
+        "real_regrets": 0
+      },
+      "sectors": {
+        "金融": {
+          "avg_change": 315.23,
+          "n_stocks": 2
+        },
+        "家电": {
+          "avg_change": 234.68,
+          "n_stocks": 2
+        },
+        "消费": {
+          "avg_change": 33.43,
+          "n_stocks": 2
+        },
+        "AI芯片": {
+          "avg_change": 3.37,
+          "n_stocks": 1
+        },
+        "光模块": {
+          "avg_change": 2.05,
+          "n_stocks": 1
+        },
+        "AI": {
+          "avg_change": 1.75,
+          "n_stocks": 1
+        },
+        "新能源": {
+          "avg_change": 0.37,
+          "n_stocks": 3
+        },
+        "AI服务器": {
+          "avg_change": 0.29,
+          "n_stocks": 1
+        },
+        "半导体": {
+          "avg_change": 0.25,
+          "n_stocks": 4
+        },
+        "银行": {
+          "avg_change": 0.16,
+          "n_stocks": 2
+        },
+        "白酒": {
+          "avg_change": 0.15,
+          "n_stocks": 2
+        },
+        "科创板": {
+          "avg_change": -0.82,
+          "n_stocks": 1
+        },
+        "医药": {
+          "avg_change": -1.68,
+          "n_stocks": 2
+        },
+        "半导体设备": {
+          "avg_change": -1.73,
+          "n_stocks": 1
+        },
+        "通信": {
+          "avg_change": -2.33,
+          "n_stocks": 1
+        },
+        "宽基": {
+          "avg_change": -11.87,
+          "n_stocks": 4
+        },
+        "周期": {
+          "avg_change": -30.98,
+          "n_stocks": 2
+        },
+        "农业": {
+          "avg_change": -68.43,
+          "n_stocks": 1
+        }
+      },
+      "efficiency": {
+        "recent_trades": 7,
+        "estimated_cost": 523.0,
+        "avg_holding_days": 1.0,
+        "total_trades": 7,
+        "trading_days": 6
+      },
+      "adjustments": [
+        {
+          "factor": "trend",
+          "old_weight": 0.3,
+          "new_weight": 0.35,
+          "change": 0.05,
+          "reason": "贡献度+29.42, 命中率36%"
+        },
+        {
+          "factor": "momentum",
+          "old_weight": 0.3,
+          "new_weight": 0.35,
+          "change": 0.05,
+          "reason": "贡献度+30.80, 命中率36%"
+        },
+        {
+          "factor": "volume",
+          "old_weight": 0.2,
+          "new_weight": 0.25,
+          "change": 0.05,
+          "reason": "贡献度+34.46, 命中率36%"
+        },
+        {
+          "factor": "mean_reversion",
+          "old_weight": 0.2,
+          "new_weight": 0.15,
+          "change": -0.05,
+          "reason": "贡献度-30.57, 命中率67%"
+        },
+        {
+          "factor": "buy_threshold",
+          "old_weight": 26,
+          "new_weight": 28,
+          "change": 2,
+          "reason": "买入命中率仅0%，提高门槛"
+        }
+      ]
+    }
   }
 ]

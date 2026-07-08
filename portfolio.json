@@ -145,7 +145,7 @@
     }
   ],
   "created_at": "2026-07-06 22:59",
-  "last_update": "2026-07-07 18:39",
+  "last_update": "2026-07-08 17:56",
   "daily_snapshots": [
     {
       "date": "2026-07-06",
@@ -175,6 +175,12 @@
       "date": "2026-07-07",
       "cash": 223198.38,
       "total_value": 972829.98,
+      "n_holdings": 5
+    },
+    {
+      "date": "2026-07-08",
+      "cash": 223198.38,
+      "total_value": 972738.78,
       "n_holdings": 5
     }
   ]
