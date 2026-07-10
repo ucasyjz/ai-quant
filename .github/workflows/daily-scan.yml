@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: write   # 需要写权限来提交结果
-  pages: write      # 部署仪表盘到 GitHub Pages
-  id-token: write
 
 jobs:
   daily-scan:
@@ -45,6 +43,7 @@ jobs:
           git config user.email "bot@quant.ai"
           git add portfolio.json strategy_params.json signal_history.json review_log.json daily_result.json data.json dashboard.html 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Daily scan: $(date -u -d '+8 hours' +%Y-%m-%d)"
+          git pull --rebase origin main 2>/dev/null || true
           git push
 
       - name: Upload dashboard artifact
@@ -56,28 +55,3 @@ jobs:
             data.json
             portfolio.json
           retention-days: 90
-
-  deploy-pages:
-    needs: daily-scan
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
