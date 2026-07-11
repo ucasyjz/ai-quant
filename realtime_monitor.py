@@ -45,8 +45,8 @@ def today_str_beijing():
 # ============ A股交易规则配置 ============
 STOP_LOSS_PCT = -5.0       # 硬止损 -5%（盘中亏损达5%立刻卖出）
 TAKE_PROFIT_PCT = 10.0     # 止盈 +10%
-SURGE_PCT = 3.0            # 候选股盘中涨幅>3% → 触发买入评估
-BUY_MIN_SCORE = 30         # 买入最低评分（比generate_daily的20更严格，盘中要求更高）
+SURGE_PCT = 1.0            # 候选股盘中涨幅>1% → 触发买入评估（原3%太严，两天0交易）
+BUY_MIN_SCORE = 25         # 买入最低评分（原30太严，与收盘扫描门槛对齐）
 MAX_POSITIONS = 5          # 最多同时持有5只
 MAX_SINGLE_RATIO = 0.25    # 单只最多25%仓位
 COMMISSION_RATE = 0.0003   # 佣金 万三

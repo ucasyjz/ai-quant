@@ -301,7 +301,11 @@ def execute_plan(portfolio, plan, close_prices=None):
     # 记录每日快照（用收盘价估值持仓市值）
     total_value = portfolio["cash"]
     for code, h in portfolio["holdings"].items():
-        val_price = close_prices.get(code, h["buy_price"]) if close_prices else h["buy_price"]
+        if close_prices and code in close_prices and close_prices[code] > 0:
+            val_price = close_prices[code]
+            h["last_price"] = close_prices[code]  # 更新最新收盘价，供dashboard使用
+        else:
+            val_price = h.get("last_price", h["buy_price"])
         total_value += h["shares"] * val_price
 
     portfolio["daily_snapshots"].append({
