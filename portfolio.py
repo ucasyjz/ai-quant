@@ -117,6 +117,17 @@ def generate_trading_plan(portfolio, scores, prices, open_prices=None):
     for code, h in list(portfolio["holdings"].items()):
         score_data = next((s for s in scores if s["code"] == code), None)
         if score_data is None:
+            # 持仓不在评分池中：用收盘价估值，标记"评分缺失"但仍计入Hold
+            current_price = prices.get(code, h["buy_price"])
+            pnl_pct = (current_price / h["buy_price"] - 1) * 100
+            plan["hold"].append({
+                "code": code,
+                "name": h["name"],
+                "score": 0,
+                "pnl_pct": round(pnl_pct, 1),
+                "shares": h["shares"],
+                "note": "评分缺失（不在候选池中）",
+            })
             continue
 
         composite = score_data["composite"]

@@ -209,6 +209,15 @@ def run_daily():
         portfolio = execute_plan(portfolio, plan, close_prices=prices)
     else:
         print(f"\n>>> Step 4: Skipping execution (next trading day: {td['next_date']})")
+        # 非交易日仍更新持仓收盘价估值（防止last_price过期）
+        updated = 0
+        for code, h in portfolio["holdings"].items():
+            if code in prices and prices[code] > 0:
+                h["last_price"] = prices[code]
+                updated += 1
+        if updated:
+            save_portfolio(portfolio)
+            print(f"  已更新 {updated} 只持仓的收盘价估值")
 
     total_value = calc_total_value(portfolio, prices)
     print(f"  Portfolio value: {total_value:,.0f}")
@@ -223,7 +232,7 @@ def run_daily():
     print("\n>>> Step 6: AI Self-Review")
     from self_review import run_self_review
     review_result, review_report = run_self_review(
-        portfolio, scores, plan, prices, data_dict
+        portfolio, scores, plan, prices, data_dict, is_trading=td["is_trading"]
     )
 
     from dashboard import append_review_to_dashboard

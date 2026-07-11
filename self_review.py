@@ -697,12 +697,13 @@ def generate_review_report(date_str, review_result, adjustments):
 #  主函数
 # ============================================================
 
-def run_self_review(portfolio, scores, plan, prices, data_dict):
+def run_self_review(portfolio, scores, plan, prices, data_dict, is_trading=True):
     """
     执行完整8维度复盘。
 
     在 generate_daily.py 的最后调用。
     第一天没有历史数据时，只记录基线，不做归因分析。
+    is_trading: 是否为交易日（非交易日跳过参数自调整，防止buy_threshold死循环）
     """
     date_str = datetime.now().strftime("%Y-%m-%d")
     history = load_signal_history()
@@ -745,11 +746,15 @@ def run_self_review(portfolio, scores, plan, prices, data_dict):
             "efficiency": efficiency,
         }
 
-        # 维度8: 参数自调整
+        # 维度8: 参数自调整（非交易日跳过，防止buy_threshold死循环）
         params = load_params()
-        adjustments = adjust_parameters(params, factor_attr, review_result)
-        if adjustments:
-            save_params(params)
+        if is_trading:
+            adjustments = adjust_parameters(params, factor_attr, review_result)
+            if adjustments:
+                save_params(params)
+        else:
+            adjustments = []
+            review_result["_note"] = "非交易日，跳过参数自调整"
 
         review_result["adjustments"] = adjustments
 
