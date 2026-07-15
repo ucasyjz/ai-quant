@@ -5659,5 +5659,281 @@
         }
       ]
     }
+  },
+  {
+    "date": "2026-07-15",
+    "report": "=== AI复盘报告 2026-07-15 ===\n\n【信号准确度】\n  昨天发出5个买入信号，4个命中(今天涨了)，命中率80.0%\n  打脸的信号:\n    中国平安: 预测买入但实际跌2.9%\n\n【因子归因】\n  趋势: 贡献度-31.64 命中率46% (-)\n  动量: 贡献度-26.63 命中率42% (-)\n  量能: 贡献度-32.37 命中率27% (-)\n  均值回归: 贡献度+26.72 命中率58% (+)\n  表现最好的: 均值回归\n  表现最差的: 量能\n\n【仓位配置】\n  总资产: ¥949,935\n  持仓5只, 现金17.3%, 最大单只26.2%\n  板块分布: 未知77.5%, 银行5.2%\n\n【风险控制】\n  组合最大回撤: -9.7%\n\n【漏买漏卖检讨】\n  错过了2只该买没买的:\n    云南白药: 评分27, 涨了56.0%\n    格力电器: 评分27, 涨了17.4%\n\n【板块表现】\n  最强: 银行+343.3%, 科创板+155.2%\n  最弱: 新能源-13.5%, 家电-30.5%\n\n【交易效率】\n  最近10笔交易, 估算手续费¥736.0\n  平均持仓3.7天\n\n【AI自我调整】\n  趋势: 0.3008→0.2508 (贡献度-31.64, 命中率46%)\n  动量: 0.3229→0.2729 (贡献度-26.63, 命中率42%)\n  量能: 0.2261→0.1761 (贡献度-32.37, 命中率27%)\n  均值回归: 0.1502→0.2002 (贡献度+26.72, 命中率58%)\n  buy_threshold: 29→27 (买入命中率达80%，适当放宽)\n\n【明日策略】\n  基于今日复盘微调了参数，明天用新参数扫描",
+    "result": {
+      "date": "2026-07-15",
+      "signal_accuracy": {
+        "buy_signals": 5,
+        "buy_hits": 4,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "neutral": 28,
+        "details": [
+          {
+            "code": "601398",
+            "name": "工商银行",
+            "signal": "买入",
+            "score": 27.8,
+            "change": 9.13,
+            "hit": "True"
+          },
+          {
+            "code": "000538",
+            "name": "云南白药",
+            "signal": "买入",
+            "score": 27.3,
+            "change": 55.97,
+            "hit": "True"
+          },
+          {
+            "code": "000651",
+            "name": "格力电器",
+            "signal": "买入",
+            "score": 27.0,
+            "change": 17.37,
+            "hit": "True"
+          },
+          {
+            "code": "601318",
+            "name": "中国平安",
+            "signal": "买入",
+            "score": 23.5,
+            "change": -2.93,
+            "hit": "False"
+          },
+          {
+            "code": "512690",
+            "name": "酒ETF",
+            "signal": "买入",
+            "score": 21.2,
+            "change": 0.23,
+            "hit": "True"
+          }
+        ],
+        "buy_accuracy": 80.0,
+        "sell_accuracy": null
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": -31.64,
+          "hit_rate": 45.5,
+          "samples": 33
+        },
+        "momentum": {
+          "avg_contribution": -26.63,
+          "hit_rate": 42.4,
+          "samples": 33
+        },
+        "volume": {
+          "avg_contribution": -32.37,
+          "hit_rate": 27.3,
+          "samples": 33
+        },
+        "mean_reversion": {
+          "avg_contribution": 26.72,
+          "hit_rate": 57.6,
+          "samples": 33
+        }
+      },
+      "position": {
+        "cash_ratio": 17.3,
+        "max_single_pct": 26.2,
+        "n_positions": 5,
+        "concentration_hhi": 1765.0,
+        "sector_distribution": {
+          "未知": 77.5,
+          "银行": 5.2
+        },
+        "total_value": 949935.0
+      },
+      "risk": {
+        "max_single_loss": 0,
+        "max_loss_stock": "",
+        "max_drawdown": -9.7,
+        "position_pnls": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "pnl": 0.0
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 0.0
+          },
+          {
+            "code": "688336",
+            "name": "三生国健",
+            "pnl": 0.0
+          },
+          {
+            "code": "002440",
+            "name": "闰土股份",
+            "pnl": 0.0
+          },
+          {
+            "code": "601398",
+            "name": "工商银行",
+            "pnl": 8.0
+          }
+        ],
+        "need_stop_loss": false
+      },
+      "missed": {
+        "missed_buys": [
+          {
+            "code": "000538",
+            "name": "云南白药",
+            "score": 27.3,
+            "change": 55.97,
+            "regret": "True"
+          },
+          {
+            "code": "000651",
+            "name": "格力电器",
+            "score": 27.0,
+            "change": 17.37,
+            "regret": "True"
+          },
+          {
+            "code": "601318",
+            "name": "中国平安",
+            "score": 23.5,
+            "change": -2.93,
+            "regret": "False"
+          },
+          {
+            "code": "512690",
+            "name": "酒ETF",
+            "score": 21.2,
+            "change": 0.23,
+            "regret": "False"
+          }
+        ],
+        "missed_sells": [],
+        "real_regrets": 2
+      },
+      "sectors": {
+        "银行": {
+          "avg_change": 343.29,
+          "n_stocks": 2
+        },
+        "科创板": {
+          "avg_change": 155.16,
+          "n_stocks": 1
+        },
+        "AI芯片": {
+          "avg_change": 84.46,
+          "n_stocks": 1
+        },
+        "AI": {
+          "avg_change": 58.98,
+          "n_stocks": 1
+        },
+        "金融": {
+          "avg_change": 48.24,
+          "n_stocks": 2
+        },
+        "周期": {
+          "avg_change": 26.24,
+          "n_stocks": 2
+        },
+        "医药": {
+          "avg_change": 21.58,
+          "n_stocks": 2
+        },
+        "白酒": {
+          "avg_change": 17.08,
+          "n_stocks": 2
+        },
+        "半导体设备": {
+          "avg_change": 4.61,
+          "n_stocks": 1
+        },
+        "消费": {
+          "avg_change": 1.25,
+          "n_stocks": 2
+        },
+        "通信": {
+          "avg_change": 0.36,
+          "n_stocks": 1
+        },
+        "AI服务器": {
+          "avg_change": -0.21,
+          "n_stocks": 1
+        },
+        "光模块": {
+          "avg_change": -0.84,
+          "n_stocks": 1
+        },
+        "农业": {
+          "avg_change": -0.98,
+          "n_stocks": 1
+        },
+        "半导体": {
+          "avg_change": -8.13,
+          "n_stocks": 4
+        },
+        "宽基": {
+          "avg_change": -12.41,
+          "n_stocks": 4
+        },
+        "新能源": {
+          "avg_change": -13.51,
+          "n_stocks": 3
+        },
+        "家电": {
+          "avg_change": -30.49,
+          "n_stocks": 2
+        }
+      },
+      "efficiency": {
+        "recent_trades": 10,
+        "estimated_cost": 736.0,
+        "avg_holding_days": 3.7,
+        "total_trades": 11,
+        "trading_days": 10
+      },
+      "adjustments": [
+        {
+          "factor": "trend",
+          "old_weight": 0.3008,
+          "new_weight": 0.2508,
+          "change": -0.05,
+          "reason": "贡献度-31.64, 命中率46%"
+        },
+        {
+          "factor": "momentum",
+          "old_weight": 0.3229,
+          "new_weight": 0.2729,
+          "change": -0.05,
+          "reason": "贡献度-26.63, 命中率42%"
+        },
+        {
+          "factor": "volume",
+          "old_weight": 0.2261,
+          "new_weight": 0.1761,
+          "change": -0.05,
+          "reason": "贡献度-32.37, 命中率27%"
+        },
+        {
+          "factor": "mean_reversion",
+          "old_weight": 0.1502,
+          "new_weight": 0.2002,
+          "change": 0.05,
+          "reason": "贡献度+26.72, 命中率58%"
+        },
+        {
+          "factor": "buy_threshold",
+          "old_weight": 29,
+          "new_weight": 27,
+          "change": -2,
+          "reason": "买入命中率达80%，适当放宽"
+        }
+      ]
+    }
   }
 ]
