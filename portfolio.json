@@ -35,7 +35,7 @@
       "buy_price": 11.086,
       "cost": 45511.69,
       "buy_date": "2026-07-13",
-      "last_price": 11.969
+      "last_price": 10.969
     }
   },
   "trades": [
@@ -206,7 +206,7 @@
     }
   ],
   "created_at": "2026-07-06 22:59",
-  "last_update": "2026-07-15 17:30",
+  "last_update": "2026-07-16 17:36",
   "daily_snapshots": [
     {
       "date": "2026-07-06",
@@ -266,6 +266,12 @@
       "date": "2026-07-15",
       "cash": 164200.14,
       "total_value": 949935.04,
+      "n_holdings": 5
+    },
+    {
+      "date": "2026-07-16",
+      "cash": 164200.14,
+      "total_value": 945835.04,
       "n_holdings": 5
     }
   ]
