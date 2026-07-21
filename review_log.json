@@ -6710,5 +6710,174 @@
         }
       ]
     }
+  },
+  {
+    "date": "2026-07-21",
+    "report": "=== AI复盘报告 2026-07-21 ===\n\n【信号准确度】暂无历史数据可比，明天开始有完整复盘\n\n【因子归因】\n  趋势: 贡献度-6.22 命中率42% (-)\n  动量: 贡献度-0.03 命中率52% (-)\n  量能: 贡献度-20.57 命中率39% (-)\n  均值回归: 贡献度+0.06 命中率48% (+)\n  表现最好的: 均值回归\n  表现最差的: 量能\n\n【仓位配置】\n  总资产: ¥882,016\n  持仓2只, 现金51.9%, 最大单只28.2%\n  板块分布: 未知48.1%\n\n【风险控制】\n  组合最大回撤: -15.8%\n\n【板块表现】\n  最强: 白酒+146.2%, 家电+145.6%\n  最弱: AI服务器-52.1%, AI芯片-55.0%\n\n【交易效率】\n  最近10笔交易, 估算手续费¥919.0\n  平均持仓8.7天\n\n【AI自我调整】\n  趋势: 0.1357→0.1 (贡献度-6.22, 命中率42%)\n  量能: 0.3531→0.3031 (贡献度-20.57, 命中率39%)\n\n【明日策略】\n  基于今日复盘微调了参数，明天用新参数扫描",
+    "result": {
+      "date": "2026-07-21",
+      "signal_accuracy": {
+        "buy_signals": 0,
+        "buy_hits": 0,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "neutral": 33,
+        "details": [],
+        "buy_accuracy": null,
+        "sell_accuracy": null
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": -6.22,
+          "hit_rate": 42.4,
+          "samples": 33
+        },
+        "momentum": {
+          "avg_contribution": -0.03,
+          "hit_rate": 51.5,
+          "samples": 33
+        },
+        "volume": {
+          "avg_contribution": -20.57,
+          "hit_rate": 39.4,
+          "samples": 33
+        },
+        "mean_reversion": {
+          "avg_contribution": 0.06,
+          "hit_rate": 48.5,
+          "samples": 33
+        }
+      },
+      "position": {
+        "cash_ratio": 51.9,
+        "max_single_pct": 28.2,
+        "n_positions": 2,
+        "concentration_hhi": 1193.0,
+        "sector_distribution": {
+          "未知": 48.1
+        },
+        "total_value": 882016.0
+      },
+      "risk": {
+        "max_single_loss": 0,
+        "max_loss_stock": "",
+        "max_drawdown": -15.8,
+        "position_pnls": [
+          {
+            "code": "001309",
+            "name": "德明利",
+            "pnl": 0.0
+          },
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 0.0
+          }
+        ],
+        "need_stop_loss": false
+      },
+      "missed": {
+        "missed_buys": [],
+        "missed_sells": [],
+        "real_regrets": 0
+      },
+      "sectors": {
+        "白酒": {
+          "avg_change": 146.21,
+          "n_stocks": 2
+        },
+        "家电": {
+          "avg_change": 145.59,
+          "n_stocks": 2
+        },
+        "银行": {
+          "avg_change": 135.36,
+          "n_stocks": 2
+        },
+        "通信": {
+          "avg_change": 108.1,
+          "n_stocks": 1
+        },
+        "农业": {
+          "avg_change": 103.42,
+          "n_stocks": 1
+        },
+        "AI": {
+          "avg_change": 75.49,
+          "n_stocks": 1
+        },
+        "金融": {
+          "avg_change": 13.01,
+          "n_stocks": 2
+        },
+        "宽基": {
+          "avg_change": 7.99,
+          "n_stocks": 4
+        },
+        "光模块": {
+          "avg_change": -0.73,
+          "n_stocks": 1
+        },
+        "消费": {
+          "avg_change": -0.95,
+          "n_stocks": 2
+        },
+        "半导体设备": {
+          "avg_change": -2.62,
+          "n_stocks": 1
+        },
+        "新能源": {
+          "avg_change": -3.14,
+          "n_stocks": 3
+        },
+        "半导体": {
+          "avg_change": -5.61,
+          "n_stocks": 4
+        },
+        "周期": {
+          "avg_change": -9.11,
+          "n_stocks": 2
+        },
+        "医药": {
+          "avg_change": -42.04,
+          "n_stocks": 2
+        },
+        "科创板": {
+          "avg_change": -49.32,
+          "n_stocks": 1
+        },
+        "AI服务器": {
+          "avg_change": -52.1,
+          "n_stocks": 1
+        },
+        "AI芯片": {
+          "avg_change": -54.96,
+          "n_stocks": 1
+        }
+      },
+      "efficiency": {
+        "recent_trades": 10,
+        "estimated_cost": 919.0,
+        "avg_holding_days": 8.7,
+        "total_trades": 14,
+        "trading_days": 14
+      },
+      "adjustments": [
+        {
+          "factor": "trend",
+          "old_weight": 0.1357,
+          "new_weight": 0.1,
+          "change": -0.05,
+          "reason": "贡献度-6.22, 命中率42%"
+        },
+        {
+          "factor": "volume",
+          "old_weight": 0.3531,
+          "new_weight": 0.3031,
+          "change": -0.05,
+          "reason": "贡献度-20.57, 命中率39%"
+        }
+      ]
+    }
   }
 ]
