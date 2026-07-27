@@ -7404,5 +7404,183 @@
         }
       ]
     }
+  },
+  {
+    "date": "2026-07-27",
+    "report": "=== AI复盘报告 2026-07-27 ===\n\n【信号准确度】暂无历史数据可比，明天开始有完整复盘\n\n【因子归因】\n  趋势: 贡献度-120.98 命中率52% (-)\n  动量: 贡献度-745.55 命中率54% (-)\n  量能: 贡献度+26.10 命中率36% (+)\n  均值回归: 贡献度+770.04 命中率58% (+)\n  表现最好的: 均值回归\n  表现最差的: 动量\n\n【仓位配置】\n  总资产: ¥794,950\n  持仓1只, 现金68.7%, 最大单只31.3%\n  板块分布: 未知31.3%\n  ⚠ 单只持仓31.3%过高，下次减仓\n\n【风险控制】\n  组合最大回撤: -24.1%\n\n【板块表现】\n  最强: 光模块+14226.7%, AI芯片+10501.6%\n  最弱: 通信-44.9%, AI-55.9%\n\n【交易效率】\n  最近10笔交易, 估算手续费¥1013.0\n  平均持仓9.9天\n\n【AI自我调整】\n  趋势: 0.1493→0.1 (贡献度-120.98, 命中率52%)\n  动量: 0.1277→0.1 (贡献度-745.55, 命中率54%)\n  量能: 0.3053→0.3553 (贡献度+26.10, 命中率36%)\n  均值回归: 0.4177→0.45 (贡献度+770.04, 命中率58%)\n\n【明日策略】\n  基于今日复盘微调了参数，明天用新参数扫描",
+    "result": {
+      "date": "2026-07-27",
+      "signal_accuracy": {
+        "buy_signals": 0,
+        "buy_hits": 0,
+        "sell_signals": 0,
+        "sell_hits": 0,
+        "neutral": 33,
+        "details": [],
+        "buy_accuracy": null,
+        "sell_accuracy": null
+      },
+      "factor_attribution": {
+        "trend": {
+          "avg_contribution": -120.98,
+          "hit_rate": 51.5,
+          "samples": 33
+        },
+        "momentum": {
+          "avg_contribution": -745.55,
+          "hit_rate": 54.5,
+          "samples": 33
+        },
+        "volume": {
+          "avg_contribution": 26.1,
+          "hit_rate": 36.4,
+          "samples": 33
+        },
+        "mean_reversion": {
+          "avg_contribution": 770.04,
+          "hit_rate": 57.6,
+          "samples": 33
+        }
+      },
+      "position": {
+        "cash_ratio": 68.7,
+        "max_single_pct": 31.3,
+        "n_positions": 1,
+        "concentration_hhi": 982.0,
+        "sector_distribution": {
+          "未知": 31.3
+        },
+        "total_value": 794950.0
+      },
+      "risk": {
+        "max_single_loss": 0,
+        "max_loss_stock": "",
+        "max_drawdown": -24.1,
+        "position_pnls": [
+          {
+            "code": "002860",
+            "name": "星帅尔",
+            "pnl": 0.0
+          }
+        ],
+        "need_stop_loss": false
+      },
+      "missed": {
+        "missed_buys": [],
+        "missed_sells": [],
+        "real_regrets": 0
+      },
+      "sectors": {
+        "光模块": {
+          "avg_change": 14226.73,
+          "n_stocks": 1
+        },
+        "AI芯片": {
+          "avg_change": 10501.57,
+          "n_stocks": 1
+        },
+        "半导体设备": {
+          "avg_change": 2432.15,
+          "n_stocks": 1
+        },
+        "半导体": {
+          "avg_change": 618.6,
+          "n_stocks": 4
+        },
+        "AI服务器": {
+          "avg_change": 413.22,
+          "n_stocks": 1
+        },
+        "医药": {
+          "avg_change": 136.46,
+          "n_stocks": 2
+        },
+        "周期": {
+          "avg_change": 136.03,
+          "n_stocks": 2
+        },
+        "家电": {
+          "avg_change": 120.03,
+          "n_stocks": 2
+        },
+        "农业": {
+          "avg_change": 86.41,
+          "n_stocks": 1
+        },
+        "宽基": {
+          "avg_change": 26.68,
+          "n_stocks": 4
+        },
+        "银行": {
+          "avg_change": 18.97,
+          "n_stocks": 2
+        },
+        "白酒": {
+          "avg_change": 1.93,
+          "n_stocks": 2
+        },
+        "科创板": {
+          "avg_change": -0.8,
+          "n_stocks": 1
+        },
+        "金融": {
+          "avg_change": -8.66,
+          "n_stocks": 2
+        },
+        "消费": {
+          "avg_change": -22.95,
+          "n_stocks": 2
+        },
+        "新能源": {
+          "avg_change": -32.93,
+          "n_stocks": 3
+        },
+        "通信": {
+          "avg_change": -44.85,
+          "n_stocks": 1
+        },
+        "AI": {
+          "avg_change": -55.92,
+          "n_stocks": 1
+        }
+      },
+      "efficiency": {
+        "recent_trades": 10,
+        "estimated_cost": 1013.0,
+        "avg_holding_days": 9.9,
+        "total_trades": 15,
+        "trading_days": 18
+      },
+      "adjustments": [
+        {
+          "factor": "trend",
+          "old_weight": 0.1493,
+          "new_weight": 0.1,
+          "change": -0.05,
+          "reason": "贡献度-120.98, 命中率52%"
+        },
+        {
+          "factor": "momentum",
+          "old_weight": 0.1277,
+          "new_weight": 0.1,
+          "change": -0.05,
+          "reason": "贡献度-745.55, 命中率54%"
+        },
+        {
+          "factor": "volume",
+          "old_weight": 0.3053,
+          "new_weight": 0.3553,
+          "change": 0.05,
+          "reason": "贡献度+26.10, 命中率36%"
+        },
+        {
+          "factor": "mean_reversion",
+          "old_weight": 0.4177,
+          "new_weight": 0.45,
+          "change": 0.05,
+          "reason": "贡献度+770.04, 命中率58%"
+        }
+      ]
+    }
   }
 ]
